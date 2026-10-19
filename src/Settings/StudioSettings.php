@@ -74,6 +74,9 @@ class StudioSettings extends Settings
 
     public int $backdrop_intensity;
 
+    // Sidebar builder: ['groups' => [...], 'items' => [...]], empty = Filament's default sidebar
+    public array $navigation_layout = [];
+
     public int $glow_intensity;
 
     public static function group(): string

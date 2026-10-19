@@ -475,6 +475,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Sidebar Builder
+    |--------------------------------------------------------------------------
+    |
+    | Locales whose labels can be edited for groups and items. Hiding an item
+    | only removes it from the sidebar; access is still decided by the
+    | resource's own policies and permissions.
+    |
+    */
+
+    'navigation' => [
+        'locales' => ['en', 'ar'],
+        'label_max_length' => 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Defaults
     |--------------------------------------------------------------------------
     |
@@ -526,6 +542,7 @@ return [
         'glass_opacity' => 45,
         'glass_refraction' => 40,
         'backdrop_intensity' => 100,
+        'navigation_layout' => [],
         'glow_intensity' => 60,
     ],
 

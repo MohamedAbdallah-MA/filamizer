@@ -3,7 +3,9 @@
 namespace DealArt\FilamentStudio;
 
 use DealArt\FilamentStudio\Commands\InstallCommand;
+use DealArt\FilamentStudio\Navigation\StudioNavigationManager;
 use DealArt\FilamentStudio\Settings\StudioSettings;
+use Filament\Navigation\NavigationManager;
 use DealArt\FilamentStudio\Support\StudioCss;
 use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
@@ -31,6 +33,9 @@ class FilamentStudioServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/settings');
+
+        // Filament binds its manager in register(); rebinding here (boot) wins.
+        $this->app->scoped(NavigationManager::class, fn (): NavigationManager => new StudioNavigationManager);
 
         FilamentAsset::register([
             StudioCss::make('filament-studio', __DIR__.'/../resources/dist/filament-studio.css'),
