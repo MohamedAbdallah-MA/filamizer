@@ -57,6 +57,25 @@ class StudioSettings extends Settings
 
     public string $default_theme_mode;
 
+    // Skins
+    public string $skin;
+
+    public string $sidebar_style;
+
+    public string $backdrop;
+
+    public ?string $backdrop_image = null;
+
+    public int $glass_blur;
+
+    public int $glass_opacity;
+
+    public int $glass_refraction;
+
+    public int $backdrop_intensity;
+
+    public int $glow_intensity;
+
     public static function group(): string
     {
         return 'studio';

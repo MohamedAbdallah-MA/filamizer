@@ -4,6 +4,7 @@ namespace DealArt\FilamentStudio\Support;
 
 use DealArt\FilamentStudio\Settings\StudioSettings;
 use Filament\Enums\ThemeMode;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Single place that turns stored settings into safe, validated theme values.
@@ -151,6 +152,61 @@ class StudioTheme
             'dark' => ThemeMode::Dark,
             default => ThemeMode::System,
         };
+    }
+
+    public static function skin(): string
+    {
+        return static::option('skin', 'skins');
+    }
+
+    public static function sidebarStyle(): string
+    {
+        return static::option('sidebar_style', 'sidebar_styles');
+    }
+
+    public static function isSidebarCollapsible(): bool
+    {
+        return static::sidebarStyle() === 'collapsible';
+    }
+
+    public static function backdrop(): string
+    {
+        $backdrop = static::option('backdrop', 'backdrops');
+
+        // An image backdrop without an image falls back to the plain color.
+        return $backdrop === 'image' && ! static::backdropImageUrl() ? 'none' : $backdrop;
+    }
+
+    public static function backdropImageUrl(): ?string
+    {
+        $path = static::value('backdrop_image');
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        return rescue(fn () => Storage::disk(config('filament-studio.backdrop_disk'))->url($path), null, false);
+    }
+
+    /**
+     * A quoted CSS url() that cannot break out of the string or the <style> tag.
+     */
+    public static function cssUrl(string $url): string
+    {
+        $safe = str_replace(['\\', '"', "\n", "\r", '<', '>'], ['%5C', '%22', '', '', '%3C', '%3E'], $url);
+
+        return "url(\"{$safe}\")";
+    }
+
+    /**
+     * A stored integer clamped to its configured range.
+     */
+    public static function range(string $key): int
+    {
+        [$min, $max] = config("filament-studio.ranges.{$key}");
+        $value = static::value($key);
+
+        return is_numeric($value) ? max($min, min($max, (int) $value)) : static::default($key);
     }
 
     public static function googleFontsUrl(string $family): string

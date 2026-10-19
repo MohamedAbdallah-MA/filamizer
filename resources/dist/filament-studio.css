@@ -1,0 +1,531 @@
+/*
+ * Filament Studio skins.
+ *
+ * Every rule is scoped under an attribute on <html>, set by the plugin:
+ *   data-studio-skin     classic | glass | neon | soft | minimal
+ *   data-studio-sidebar  classic | floating | collapsible
+ *   data-studio-backdrop none | gradient | mesh | image
+ *
+ * Tunable variables (written by the styles view and the live preview):
+ *   --studio-blur, --studio-glass-alpha, --studio-glow, --studio-backdrop-image
+ *
+ * Filament draws card and input borders as rings, so --tw-ring-color is the border.
+ * Logical properties only, so RTL mirrors correctly.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Backdrop                                                            */
+/*                                                                     */
+/* Glass only looks like glass when there is color behind it, so the   */
+/* backdrops cover the whole viewport instead of fading out mid-page.  */
+/* --studio-backdrop-strength scales every color stop: the user's      */
+/* intensity (--studio-backdrop-intensity, 0-1.5) times a mode factor, */
+/* higher in dark mode because dark backgrounds swallow color.         */
+/* ------------------------------------------------------------------ */
+
+html {
+    --studio-backdrop-strength: var(--studio-backdrop-intensity, 1);
+}
+
+html.dark {
+    --studio-backdrop-strength: calc(var(--studio-backdrop-intensity, 1) * 1.35);
+}
+
+html[data-studio-backdrop='gradient'] .fi-body {
+    background-image: linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--primary-500) min(100%, 34% * var(--studio-backdrop-strength)), transparent) 0%,
+        color-mix(in oklab, var(--info-500) min(100%, 18% * var(--studio-backdrop-strength)), transparent) 50%,
+        color-mix(in oklab, var(--success-500) min(100%, 24% * var(--studio-backdrop-strength)), transparent) 100%
+    );
+    background-attachment: fixed;
+}
+
+html[data-studio-backdrop='mesh'] .fi-body {
+    background-image:
+        radial-gradient(at 10% 6%, color-mix(in oklab, var(--primary-500) min(100%, 42% * var(--studio-backdrop-strength)), transparent) 0, transparent 60%),
+        radial-gradient(at 92% 12%, color-mix(in oklab, var(--info-500) min(100%, 36% * var(--studio-backdrop-strength)), transparent) 0, transparent 55%),
+        radial-gradient(at 75% 95%, color-mix(in oklab, var(--success-500) min(100%, 30% * var(--studio-backdrop-strength)), transparent) 0, transparent 60%),
+        radial-gradient(at 6% 92%, color-mix(in oklab, var(--warning-500) min(100%, 26% * var(--studio-backdrop-strength)), transparent) 0, transparent 55%),
+        radial-gradient(at 50% 50%, color-mix(in oklab, var(--primary-300) min(100%, 16% * var(--studio-backdrop-strength)), transparent) 0, transparent 70%);
+    background-attachment: fixed;
+}
+
+html[data-studio-backdrop='image'] .fi-body {
+    background-image: var(--studio-backdrop-image, none);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Aurora: large soft color blobs drifting slowly behind the content. The motion */
+/* is what makes glass read as glass, like content scrolling under iOS controls.  */
+html[data-studio-backdrop='aurora'] .fi-body {
+    isolation: isolate;
+}
+
+html[data-studio-backdrop='aurora'] .fi-body::before {
+    content: '';
+    position: fixed;
+    inset: -15%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(28% 34% at 18% 22%, color-mix(in oklab, var(--primary-500) min(100%, 70% * var(--studio-backdrop-strength)), transparent), transparent 70%),
+        radial-gradient(30% 30% at 82% 18%, color-mix(in oklab, var(--info-500) min(100%, 60% * var(--studio-backdrop-strength)), transparent), transparent 70%),
+        radial-gradient(34% 30% at 72% 82%, color-mix(in oklab, var(--success-500) min(100%, 52% * var(--studio-backdrop-strength)), transparent), transparent 70%),
+        radial-gradient(26% 30% at 24% 80%, color-mix(in oklab, var(--warning-500) min(100%, 46% * var(--studio-backdrop-strength)), transparent), transparent 70%),
+        radial-gradient(22% 24% at 50% 50%, color-mix(in oklab, var(--danger-500) min(100%, 26% * var(--studio-backdrop-strength)), transparent), transparent 70%);
+    filter: blur(48px) saturate(140%);
+    animation: studio-aurora 28s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+@keyframes studio-aurora {
+    0% {
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: translate3d(4%, -3%, 0) rotate(8deg) scale(1.08);
+    }
+
+    100% {
+        transform: translate3d(-4%, 3%, 0) rotate(-6deg) scale(1.02);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-studio-backdrop='aurora'] .fi-body::before {
+        animation: none;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Sidebar styles                                                      */
+/* ------------------------------------------------------------------ */
+
+@media (min-width: 64rem) {
+    html[data-studio-sidebar='floating'] .fi-sidebar {
+        margin-block: 0.75rem;
+        margin-inline-start: 0.75rem;
+        top: calc(4rem + 0.75rem);
+        height: calc(100dvh - 4rem - 1.5rem);
+        border-radius: var(--radius-xl);
+        background-color: var(--studio-surface);
+        box-shadow:
+            0 0 0 1px var(--studio-border),
+            0 18px 40px -24px rgb(0 0 0 / 0.35);
+        overflow: hidden;
+    }
+
+    html[data-studio-sidebar='floating'] .fi-sidebar-nav {
+        padding-inline: calc(var(--spacing) * 4);
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Liquid Glass                                                        */
+/*                                                                     */
+/* Built in layers, each one degrading gracefully:                     */
+/*   1. ::before  tint + blur + saturation (frosted base, all browsers */
+/*                with backdrop-filter; solid surface otherwise)       */
+/*   2. ::after   specular rim, inner glow and a highlight that        */
+/*                follows the pointer (--studio-light-x / -y)          */
+/*   3. refraction: an SVG displacement filter added to the backdrop   */
+/*                of floating surfaces, only when the plugin's script  */
+/*                sets data-studio-refraction="on" (Chromium only;     */
+/*                Safari ignores it and Firefox fails silently).       */
+/*                                                                     */
+/* The layers live on pseudo-elements, not on the element itself:      */
+/* backdrop-filter on an element turns it into the containing block    */
+/* for position:fixed children, which would misplace dropdowns.        */
+/* ------------------------------------------------------------------ */
+
+/* Registered so the pointer highlight can transition (fade and follow). */
+@property --studio-light-strength {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
+
+@property --studio-light-x {
+    syntax: '<length-percentage>';
+    inherits: true;
+    initial-value: 50%;
+}
+
+@property --studio-light-y {
+    syntax: '<length-percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
+
+html[data-studio-skin='glass'] {
+    --studio-glass-tint: color-mix(in oklab, var(--studio-surface) var(--studio-glass-alpha, 45%), transparent);
+    --studio-glass-input: color-mix(in oklab, var(--studio-input) calc(var(--studio-glass-alpha, 45%) - 5%), transparent);
+    --studio-glass-filter: blur(var(--studio-blur, 16px)) saturate(185%) brightness(1.06);
+    --studio-glass-rim-strong: rgb(255 255 255 / 0.95);
+    --studio-glass-rim-soft: rgb(255 255 255 / 0.3);
+    --studio-glass-edge: rgb(255 255 255 / 0.65);
+    --studio-glass-glow: rgb(255 255 255 / 0.18);
+    --studio-glass-shine: rgb(255 255 255 / 0.32);
+    --studio-glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 12px 32px -10px rgb(0 0 0 / 0.22);
+}
+
+html[data-studio-skin='glass'].dark {
+    --studio-glass-filter: blur(var(--studio-blur, 16px)) saturate(170%) brightness(0.92);
+    --studio-glass-rim-strong: rgb(255 255 255 / 0.35);
+    --studio-glass-rim-soft: rgb(255 255 255 / 0.08);
+    --studio-glass-edge: rgb(255 255 255 / 0.12);
+    --studio-glass-glow: rgb(255 255 255 / 0.06);
+    --studio-glass-shine: rgb(255 255 255 / 0.12);
+    --studio-glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 16px 40px -12px rgb(0 0 0 / 0.65);
+}
+
+/* Elements that are not positioned yet need a box for the layers. */
+html[data-studio-skin='glass'] :is(
+    .fi-topbar,
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-simple-main:not(.fi-width-screen)
+) {
+    position: relative;
+}
+
+html[data-studio-skin='glass'] :is(
+    .fi-topbar,
+    .fi-sidebar,
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+) {
+    isolation: isolate;
+    background-color: transparent;
+    box-shadow: 0 0 0 1px var(--studio-glass-edge), var(--studio-glass-shadow);
+}
+
+/* Layer 1: tint, blur and saturation. */
+html[data-studio-skin='glass'] :is(
+    .fi-topbar,
+    .fi-sidebar,
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    border-radius: inherit;
+    background-color: var(--studio-glass-tint);
+    -webkit-backdrop-filter: var(--studio-glass-lens,) var(--studio-glass-filter);
+    backdrop-filter: var(--studio-glass-lens,) var(--studio-glass-filter);
+    pointer-events: none;
+}
+
+/* Layer 2: specular rim (light from the top-left), inner glow, moving highlight. */
+html[data-studio-skin='glass'] :is(
+    .fi-topbar,
+    .fi-sidebar,
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            420px circle at var(--studio-light-x) var(--studio-light-y),
+            color-mix(in oklab, var(--studio-glass-shine) var(--studio-light-strength), transparent),
+            transparent 60%
+        ),
+        linear-gradient(180deg, var(--studio-glass-glow), transparent 38%);
+    box-shadow:
+        inset 1px 1px 0 0 var(--studio-glass-rim-strong),
+        inset -1px -1px 0 0 var(--studio-glass-rim-soft),
+        inset 0 0 18px 0 var(--studio-glass-glow);
+    /* The light fades in and out, and trails the pointer slightly like liquid. */
+    transition:
+        --studio-light-strength 450ms ease,
+        --studio-light-x 160ms ease-out,
+        --studio-light-y 160ms ease-out;
+}
+
+/* Entering a surface: jump to the pointer while the light is still invisible, then fade in. */
+html[data-studio-skin='glass'] :is(
+    .fi-topbar,
+    .fi-sidebar,
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+)[data-studio-light-snap]::after {
+    transition: --studio-light-strength 450ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-studio-skin='glass'] :is(
+        .fi-topbar,
+        .fi-sidebar,
+        .fi-section,
+        .fi-ta-ctn,
+        .fi-wi-stats-overview-stat,
+        .fi-modal-window,
+        .fi-simple-main,
+        .fi-dropdown-panel
+    )::after {
+        transition: none;
+    }
+}
+
+/* Layer 3: refraction on floating surfaces (Chromium, opt-in by the plugin script). */
+html[data-studio-skin='glass'][data-studio-refraction='on'] :is(
+    .fi-topbar,
+    .fi-sidebar,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+) {
+    --studio-glass-lens: url(#studio-liquid-lens);
+}
+
+/* Cards stay frosted only, even inside a refracting modal (cheaper on large areas). */
+html[data-studio-skin='glass'] :is(
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat
+) {
+    --studio-glass-lens: initial;
+}
+
+html[data-studio-skin='glass'] .fi-sidebar-header {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+html[data-studio-skin='glass'] .fi-input-wrp:not(.fi-disabled) {
+    background-color: var(--studio-glass-input);
+    -webkit-backdrop-filter: blur(6px) saturate(160%);
+    backdrop-filter: blur(6px) saturate(160%);
+}
+
+html[data-studio-skin='glass'] .fi-input-wrp:not(.fi-disabled):not(.fi-invalid):not(:focus-within) {
+    box-shadow: inset 0 1px 0 0 var(--studio-glass-rim-soft), 0 0 0 1px var(--studio-glass-rim-soft);
+}
+
+/* Active menu item and filled buttons read as small glass pills. */
+html[data-studio-skin='glass'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: color-mix(in oklab, var(--primary-500) 16%, transparent);
+    box-shadow:
+        inset 1px 1px 0 0 var(--studio-glass-rim-strong),
+        inset 0 0 12px 0 color-mix(in oklab, var(--primary-500) 18%, transparent);
+}
+
+html[data-studio-skin='glass'] .fi-btn.fi-color:not(.fi-outlined):not(.fi-disabled) {
+    box-shadow:
+        inset 0 1px 0 0 rgb(255 255 255 / 0.35),
+        inset 0 -1px 0 0 rgb(0 0 0 / 0.12),
+        0 6px 18px -8px color-mix(in oklab, var(--color-500) 70%, transparent);
+}
+
+/* No backdrop-filter, or the user asked for less transparency: solid surfaces. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    html[data-studio-skin='glass'] {
+        --studio-glass-tint: var(--studio-surface);
+        --studio-glass-input: var(--studio-input);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    html[data-studio-skin='glass'] {
+        --studio-glass-tint: var(--studio-surface);
+        --studio-glass-input: var(--studio-input);
+        --studio-glass-filter: none;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Neon                                                                */
+/* ------------------------------------------------------------------ */
+
+html[data-studio-skin='neon'] {
+    --studio-glow-color: color-mix(in oklab, var(--primary-500) var(--studio-glow, 60%), transparent);
+    --studio-neon-edge: color-mix(in oklab, var(--primary-500) 35%, transparent);
+}
+
+html[data-studio-skin='neon'] :is(
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+) {
+    box-shadow:
+        0 0 0 1px var(--studio-neon-edge),
+        0 0 28px -10px var(--studio-glow-color);
+}
+
+html[data-studio-skin='neon'] .fi-topbar {
+    box-shadow:
+        0 1px 0 var(--studio-neon-edge),
+        0 6px 24px -14px var(--studio-glow-color);
+}
+
+html[data-studio-skin='neon'] .fi-btn.fi-color:not(.fi-outlined):not(.fi-disabled) {
+    box-shadow: 0 0 18px -3px color-mix(in oklab, var(--color-500) var(--studio-glow, 60%), transparent);
+    transition: box-shadow 150ms ease;
+}
+
+html[data-studio-skin='neon'] .fi-btn.fi-color:not(.fi-outlined):not(.fi-disabled):hover {
+    box-shadow: 0 0 26px -2px color-mix(in oklab, var(--color-500) var(--studio-glow, 60%), transparent);
+}
+
+html[data-studio-skin='neon'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: color-mix(in oklab, var(--primary-500) 14%, transparent);
+    box-shadow:
+        inset 0 0 0 1px var(--studio-neon-edge),
+        0 0 18px -6px var(--studio-glow-color);
+}
+
+html[data-studio-skin='neon'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn :is(.fi-icon, .fi-sidebar-item-label) {
+    color: var(--primary-400);
+}
+
+html[data-studio-skin='neon'] .fi-input-wrp:not(.fi-disabled):not(.fi-invalid):focus-within {
+    box-shadow:
+        0 0 0 2px var(--primary-500),
+        0 0 18px -2px var(--studio-glow-color);
+}
+
+html[data-studio-skin='neon'] .fi-header-heading {
+    text-shadow: 0 0 22px var(--studio-glow-color);
+}
+
+html[data-studio-skin='neon'] .fi-badge.fi-color {
+    box-shadow: 0 0 10px -3px color-mix(in oklab, var(--color-500) var(--studio-glow, 60%), transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Soft                                                                */
+/* ------------------------------------------------------------------ */
+
+html[data-studio-skin='soft'] {
+    --studio-soft-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 14px 34px -16px rgb(0 0 0 / 0.2);
+}
+
+html[data-studio-skin='soft'].dark {
+    --studio-soft-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 14px 34px -16px rgb(0 0 0 / 0.7);
+}
+
+html[data-studio-skin='soft'] :is(
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+) {
+    box-shadow: var(--studio-soft-shadow);
+}
+
+html[data-studio-skin='soft'] .fi-topbar {
+    box-shadow: 0 8px 24px -18px rgb(0 0 0 / 0.35);
+}
+
+html[data-studio-skin='soft'] .fi-input-wrp:not(.fi-disabled):not(.fi-invalid):not(:focus-within) {
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+html[data-studio-skin='soft'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: var(--studio-surface);
+    box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.35);
+}
+
+/* ------------------------------------------------------------------ */
+/* Minimal                                                             */
+/* ------------------------------------------------------------------ */
+
+html[data-studio-skin='minimal'] :is(
+    .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn,
+    .fi-wi-stats-overview-stat,
+    .fi-modal-window,
+    .fi-simple-main,
+    .fi-dropdown-panel
+) {
+    box-shadow: 0 0 0 1px var(--studio-border);
+}
+
+html[data-studio-skin='minimal'] .fi-topbar {
+    box-shadow: 0 1px 0 var(--studio-border);
+}
+
+html[data-studio-skin='minimal'] .fi-btn {
+    --tw-shadow: 0 0 #0000;
+}
+
+html[data-studio-skin='minimal'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: transparent;
+    box-shadow: inset 3px 0 0 var(--primary-500);
+}
+
+html[data-studio-skin='minimal'][dir='rtl'] .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    box-shadow: inset -3px 0 0 var(--primary-500);
+}
+
+/* ------------------------------------------------------------------ */
+/* Editor UI (live preview notice and contrast warnings)               */
+/* ------------------------------------------------------------------ */
+
+.fi-studio-preview {
+    display: grid;
+    row-gap: 0.5rem;
+}
+
+.fi-studio-notice,
+.fi-studio-warning {
+    display: flex;
+    align-items: flex-start;
+    column-gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.fi-studio-notice {
+    color: var(--gray-500);
+}
+
+.fi-studio-warning {
+    border-radius: var(--radius-lg);
+    padding: 0.5rem 0.75rem;
+    background-color: color-mix(in oklab, var(--warning-500) 12%, transparent);
+    color: var(--warning-700);
+}
+
+.dark .fi-studio-warning {
+    color: var(--warning-400);
+}
+
+.fi-studio-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}

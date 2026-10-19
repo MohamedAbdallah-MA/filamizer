@@ -5,7 +5,10 @@ namespace DealArt\FilamentStudio\Filament;
 use DealArt\FilamentStudio\StudioPlugin;
 use DealArt\FilamentStudio\Support\StudioTheme;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Slider;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
@@ -25,6 +28,7 @@ class StudioAppearanceTab
                     ->columnSpanFull(),
 
                 static::presetsSection(),
+                static::styleSection(),
                 static::semanticColorsSection(),
                 static::surfacesSection(),
                 static::neutralPaletteSection(),
@@ -66,6 +70,99 @@ class StudioAppearanceTab
                     })
                     ->columnSpanFull(),
             ]);
+    }
+
+    protected static function styleSection(): Section
+    {
+        return Section::make(__('Style'))
+            ->description(__('Pick the overall look of the dashboard, the sidebar style, and what sits behind the content.'))
+            ->schema([
+                ToggleButtons::make('skin')
+                    ->label(__('Skin'))
+                    ->options(static::translatedOptions('skins'))
+                    ->icons([
+                        'classic' => 'heroicon-o-squares-2x2',
+                        'glass' => 'heroicon-o-sparkles',
+                        'neon' => 'heroicon-o-bolt',
+                        'soft' => 'heroicon-o-cloud',
+                        'minimal' => 'heroicon-o-minus',
+                    ])
+                    ->in(array_keys(config('filament-studio.skins', [])))
+                    ->inline()
+                    ->live()
+                    ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
+                        // Glass over a plain color just looks like a flat card.
+                        if ($state === 'glass' && $get('backdrop') === 'none') {
+                            $set('backdrop', 'aurora');
+                        }
+                    })
+                    ->required(),
+
+                Slider::make('glass_blur')
+                    ->label(__('Blur'))
+                    ->helperText(__('How strongly the background is blurred behind glass surfaces.'))
+                    ->visible(fn (Get $get): bool => $get('skin') === 'glass')
+                    ->tap(fn (Slider $slider) => static::configureRange($slider, 'glass_blur')),
+                Slider::make('glass_opacity')
+                    ->label(__('Surface opacity'))
+                    ->helperText(__('Lower values show more of the background through cards and the sidebar.'))
+                    ->visible(fn (Get $get): bool => $get('skin') === 'glass')
+                    ->tap(fn (Slider $slider) => static::configureRange($slider, 'glass_opacity')),
+                Slider::make('glass_refraction')
+                    ->label(__('Refraction'))
+                    ->helperText(__('How much the glass edges bend what is behind them, like a lens. Shown in Chrome and Edge; other browsers keep the frosted look. 0 turns it off.'))
+                    ->visible(fn (Get $get): bool => $get('skin') === 'glass')
+                    ->tap(fn (Slider $slider) => static::configureRange($slider, 'glass_refraction')),
+                Slider::make('glow_intensity')
+                    ->label(__('Glow intensity'))
+                    ->helperText(__('Strength of the neon glow around buttons, cards, and the active menu item.'))
+                    ->visible(fn (Get $get): bool => $get('skin') === 'neon')
+                    ->tap(fn (Slider $slider) => static::configureRange($slider, 'glow_intensity')),
+
+                ToggleButtons::make('sidebar_style')
+                    ->label(__('Sidebar Style'))
+                    ->helperText(__('"Collapsible to icons" takes effect after saving.'))
+                    ->options(static::translatedOptions('sidebar_styles'))
+                    ->in(array_keys(config('filament-studio.sidebar_styles', [])))
+                    ->inline()
+                    ->required(),
+
+                ToggleButtons::make('backdrop')
+                    ->label(__('Backdrop'))
+                    ->helperText(__("Glass needs color behind it: Aurora looks most like Apple's Liquid Glass."))
+                    ->options(static::translatedOptions('backdrops'))
+                    ->in(array_keys(config('filament-studio.backdrops', [])))
+                    ->inline()
+                    ->live()
+                    ->required(),
+                Slider::make('backdrop_intensity')
+                    ->label(__('Backdrop intensity'))
+                    ->helperText(__('How strong the backdrop colors are. Lower values give a subtler, darker look; 100 is the default.'))
+                    ->visible(fn (Get $get): bool => in_array($get('backdrop'), ['gradient', 'mesh', 'aurora'], true))
+                    ->tap(fn (Slider $slider) => static::configureRange($slider, 'backdrop_intensity')),
+                FileUpload::make('backdrop_image')
+                    ->label(__('Backdrop Image'))
+                    ->helperText(__('Shown after saving. Large, soft images work best.'))
+                    ->image()
+                    ->disk(config('filament-studio.backdrop_disk'))
+                    ->directory(config('filament-studio.backdrop_directory'))
+                    ->visibility('public')
+                    ->maxSize(4096)
+                    ->visible(fn (Get $get): bool => $get('backdrop') === 'image')
+                    ->required(fn (Get $get): bool => $get('backdrop') === 'image'),
+            ]);
+    }
+
+    protected static function configureRange(Slider $slider, string $key): void
+    {
+        [$min, $max] = config("filament-studio.ranges.{$key}");
+
+        $slider
+            ->range($min, $max)
+            ->step(1)
+            ->tooltips()
+            ->rules(['integer', "between:{$min},{$max}"])
+            ->required();
     }
 
     protected static function semanticColorsSection(): Section

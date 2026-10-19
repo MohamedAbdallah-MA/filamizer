@@ -63,9 +63,14 @@ class StudioPlugin implements Plugin
                 isForced: fn (): bool => StudioTheme::isDarkModeForced(),
             )
             ->defaultThemeMode(StudioTheme::defaultThemeMode())
+            ->sidebarCollapsibleOnDesktop(fn (): bool => StudioTheme::isSidebarCollapsible())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn () => view('filament-studio::styles'),
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('filament-studio::liquid-glass'),
             );
     }
 

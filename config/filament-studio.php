@@ -429,6 +429,52 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Skins, Sidebar & Backdrop
+    |--------------------------------------------------------------------------
+    |
+    | Skins are pre-built styles in resources/dist/filament-studio.css, scoped
+    | under html[data-studio-skin]. They switch at runtime without a rebuild.
+    |
+    */
+
+    'skins' => [
+        'classic' => 'Classic',
+        'glass' => 'Liquid Glass',
+        'neon' => 'Neon',
+        'soft' => 'Soft',
+        'minimal' => 'Minimal',
+    ],
+
+    'sidebar_styles' => [
+        'classic' => 'Classic',
+        'floating' => 'Floating',
+        'collapsible' => 'Collapsible to icons',
+    ],
+
+    'backdrops' => [
+        'none' => 'Plain color',
+        'gradient' => 'Gradient',
+        'mesh' => 'Mesh',
+        'aurora' => 'Aurora (animated)',
+        'image' => 'Image',
+    ],
+
+    // Disk and folder for uploaded backdrop images.
+    'backdrop_disk' => 'public',
+
+    'backdrop_directory' => 'filament-studio',
+
+    // Allowed ranges for the skin sliders.
+    'ranges' => [
+        'glass_blur' => [4, 40],
+        'glass_opacity' => [15, 90],
+        'glass_refraction' => [0, 80],
+        'backdrop_intensity' => [0, 150],
+        'glow_intensity' => [0, 100],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Defaults
     |--------------------------------------------------------------------------
     |
@@ -472,6 +518,15 @@ return [
         'radius' => 'md',
         'dark_mode' => 'toggle',
         'default_theme_mode' => 'system',
+        'skin' => 'classic',
+        'sidebar_style' => 'classic',
+        'backdrop' => 'none',
+        'backdrop_image' => null,
+        'glass_blur' => 16,
+        'glass_opacity' => 45,
+        'glass_refraction' => 40,
+        'backdrop_intensity' => 100,
+        'glow_intensity' => 60,
     ],
 
 ];

@@ -5,7 +5,15 @@
     $dark = StudioTheme::surfaces(dark: true);
     $radii = StudioTheme::radii();
     $secondaryFont = StudioTheme::secondaryFontFor();
+    $backdropImage = StudioTheme::backdrop() === 'image' ? StudioTheme::backdropImageUrl() : null;
 @endphp
+
+{{-- Set before first paint so the skin never flashes. --}}
+<script>
+    document.documentElement.dataset.studioSkin = @js(StudioTheme::skin());
+    document.documentElement.dataset.studioSidebar = @js(StudioTheme::sidebarStyle());
+    document.documentElement.dataset.studioBackdrop = @js(StudioTheme::backdrop());
+</script>
 
 @if ($secondaryFont !== StudioTheme::fontFor())
     <link href="{{ StudioTheme::googleFontsUrl($secondaryFont) }}" rel="stylesheet" data-studio-font="{{ $secondaryFont }}" />
@@ -24,6 +32,13 @@
         --radius-md: {{ $radii['md'] }};
         --radius-lg: {{ $radii['lg'] }};
         --radius-xl: {{ $radii['xl'] }};
+        --studio-blur: {{ StudioTheme::range('glass_blur') }}px;
+        --studio-glass-alpha: {{ StudioTheme::range('glass_opacity') }}%;
+        --studio-glow: {{ StudioTheme::range('glow_intensity') }}%;
+        --studio-backdrop-intensity: {{ StudioTheme::range('backdrop_intensity') / 100 }};
+        @if ($backdropImage)
+            --studio-backdrop-image: {!! StudioTheme::cssUrl($backdropImage) !!};
+        @endif
     }
 
     :root.dark {
@@ -52,6 +67,7 @@
     .fi-ta-ctn,
     .fi-wi-stats-overview-stat,
     .fi-modal-window,
+    .fi-simple-main,
     .fi-dropdown-panel {
         background-color: var(--studio-surface);
         --tw-ring-color: var(--studio-border);
