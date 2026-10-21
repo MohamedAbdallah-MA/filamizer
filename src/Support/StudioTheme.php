@@ -2,7 +2,7 @@
 
 namespace DealArt\FilamentStudio\Support;
 
-use DealArt\FilamentStudio\Settings\StudioSettings;
+use Filament\Support\Colors\Color;
 use Filament\Enums\ThemeMode;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,9 +21,7 @@ class StudioTheme
 
     public static function value(string $key): mixed
     {
-        $stored = rescue(fn () => app(StudioSettings::class)->{$key}, null, false);
-
-        return $stored ?? static::default($key);
+        return StudioPreferences::make()->value($key) ?? static::default($key);
     }
 
     public static function default(string $key): mixed
@@ -207,6 +205,73 @@ class StudioTheme
         $value = static::value($key);
 
         return is_numeric($value) ? max($min, min($max, (int) $value)) : static::default($key);
+    }
+
+    /**
+     * Drop or clamp invalid values before saving. Hidden form fields are saved
+     * but not validated, so this is the last line of defense on write.
+     *
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    public static function sanitizeValues(array $values): array
+    {
+        $options = [
+            'skin' => 'skins', 'sidebar_style' => 'sidebar_styles', 'backdrop' => 'backdrops',
+            'font_size' => 'font_sizes', 'density' => 'densities', 'radius' => 'radii',
+            'dark_mode' => 'dark_modes', 'default_theme_mode' => 'default_theme_modes',
+            'font_arabic' => 'fonts.arabic', 'font_latin' => 'fonts.latin', 'preset' => 'themes',
+        ];
+
+        $clean = [];
+
+        foreach ($values as $key => $value) {
+            $default = config("filament-studio.defaults.{$key}");
+
+            if (isset($options[$key])) {
+                if ($value === null && $key === 'preset') {
+                    $clean[$key] = null;
+                } elseif (in_array($value, array_keys(config("filament-studio.{$options[$key]}", [])), true)) {
+                    $clean[$key] = $value;
+                }
+            } elseif (config()->has("filament-studio.ranges.{$key}")) {
+                [$min, $max] = config("filament-studio.ranges.{$key}");
+
+                if (is_numeric($value)) {
+                    $clean[$key] = max($min, min($max, (int) $value));
+                }
+            } elseif ($key === 'gray_palette') {
+                if (is_array($value)) {
+                    $clean[$key] = collect(self::GRAY_SHADES)
+                        ->mapWithKeys(fn (int $shade) => [$shade => static::isHex($value[$shade] ?? null) ? $value[$shade] : $default[$shade]])
+                        ->all();
+                }
+            } elseif ($key === 'user_skins') {
+                if (is_array($value)) {
+                    $clean[$key] = array_values(array_intersect($value, array_keys(config('filament-studio.skins', []))));
+                }
+            } elseif ($key === 'backdrop_image' || $key === 'navigation_layout') {
+                $clean[$key] = $value;
+            } elseif (is_string($default) && str_starts_with($default, '#')) {
+                if (static::isHex($value)) {
+                    $clean[$key] = $value;
+                }
+            } else {
+                $clean[$key] = $value;
+            }
+        }
+
+        return $clean;
+    }
+
+    /**
+     * The primary color scale (50–950) for the dark theme, in Filament's format.
+     *
+     * @return array<int, string>
+     */
+    public static function darkPrimaryPalette(): array
+    {
+        return rescue(fn () => Color::generatePalette(static::color('dark_primary')), [], false);
     }
 
     public static function googleFontsUrl(string $family): string

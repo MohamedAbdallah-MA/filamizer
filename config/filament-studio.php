@@ -471,6 +471,9 @@ return [
         'glass_refraction' => [0, 80],
         'backdrop_intensity' => [0, 150],
         'glow_intensity' => [0, 100],
+        'dark_glass_opacity' => [15, 90],
+        'dark_backdrop_intensity' => [0, 150],
+        'dark_glow_intensity' => [0, 100],
     ],
 
     /*
@@ -487,6 +490,37 @@ return [
     'navigation' => [
         'locales' => ['en', 'ar'],
         'label_max_length' => 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Personal Appearance
+    |--------------------------------------------------------------------------
+    |
+    | The admin's settings are everyone's default. Users can override these
+    | keys for themselves on the "My appearance" page, using only the skins
+    | the admin allows (the user_skins setting; empty turns the page off).
+    |
+    */
+
+    'user_keys' => [
+        'skin', 'font_size',
+        'primary', 'background', 'surface', 'input', 'border',
+        'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border',
+        'glass_blur', 'glass_refraction', 'glass_opacity', 'dark_glass_opacity',
+        'glow_intensity', 'dark_glow_intensity',
+        'backdrop', 'backdrop_intensity', 'dark_backdrop_intensity',
+    ],
+
+    // The colors and effect strengths that are set separately for each theme.
+    'theme_keys' => [
+        'light' => ['primary', 'background', 'surface', 'input', 'border', 'glass_opacity', 'glow_intensity', 'backdrop_intensity'],
+        'dark' => ['dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border', 'dark_glass_opacity', 'dark_glow_intensity', 'dark_backdrop_intensity'],
+    ],
+
+    'profiles' => [
+        'max_per_user' => 20,
+        'name_max_length' => 40,
     ],
 
     /*
@@ -543,6 +577,11 @@ return [
         'glass_refraction' => 40,
         'backdrop_intensity' => 100,
         'navigation_layout' => [],
+        'dark_primary' => '#B08C50',
+        'dark_glass_opacity' => 40,
+        'dark_backdrop_intensity' => 100,
+        'dark_glow_intensity' => 60,
+        'user_skins' => ['classic', 'glass', 'neon', 'soft', 'minimal'],
         'glow_intensity' => 60,
     ],
 

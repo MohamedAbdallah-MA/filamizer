@@ -46,6 +46,12 @@
         --studio-surface: {{ $dark['surface'] }};
         --studio-input: {{ $dark['input'] }};
         --studio-border: {{ $dark['border'] }};
+        --studio-glass-alpha: {{ StudioTheme::range('dark_glass_opacity') }}%;
+        --studio-glow: {{ StudioTheme::range('dark_glow_intensity') }}%;
+        --studio-backdrop-intensity: {{ StudioTheme::range('dark_backdrop_intensity') / 100 }};
+        @foreach (StudioTheme::darkPrimaryPalette() as $shade => $value)
+            --primary-{{ $shade }}: {{ $value }};
+        @endforeach
     }
 
     html {

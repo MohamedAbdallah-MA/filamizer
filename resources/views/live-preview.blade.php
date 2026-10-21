@@ -47,10 +47,13 @@
             }
 
             for (const name of this.config.semantic) {
-                if (! this.hexPattern.test(state[name] ?? '')) continue
+                // The main color is set per theme; status colors are shared.
+                const color = name === 'primary' ? state[prefix + 'primary'] : state[name]
+
+                if (! this.hexPattern.test(color ?? '')) continue
 
                 for (const [shade, [share, base]] of Object.entries(this.mixes)) {
-                    root.setProperty(`--${name}-${shade}`, share === 100 ? state[name] : `color-mix(in oklab, ${state[name]} ${share}%, ${base})`)
+                    root.setProperty(`--${name}-${shade}`, share === 100 ? color : `color-mix(in oklab, ${color} ${share}%, ${base})`)
                 }
             }
 
@@ -67,8 +70,11 @@
 
             const isRtl = html.dir === 'rtl'
             const fonts = [...new Set(isRtl ? [state.font_arabic, state.font_latin] : [state.font_latin, state.font_arabic])].filter(Boolean)
-            fonts.forEach((font) => this.loadFont(font))
-            root.setProperty('--studio-font-family', [...fonts.map((font) => `'${font}'`), 'ui-sans-serif', 'system-ui', 'sans-serif'].join(', '))
+            // Pages without font fields, like My appearance, keep the current fonts.
+            if (fonts.length) {
+                fonts.forEach((font) => this.loadFont(font))
+                root.setProperty('--studio-font-family', [...fonts.map((font) => `'${font}'`), 'ui-sans-serif', 'system-ui', 'sans-serif'].join(', '))
+            }
 
             // Skins. A collapsible sidebar is a server-side panel option, so it only changes after saving.
             if (state.skin) html.dataset.studioSkin = state.skin
@@ -79,9 +85,9 @@
             if (state.backdrop) html.dataset.studioBackdrop = (state.backdrop === 'image' && ! hasSavedImage) ? 'none' : state.backdrop
 
             if (state.glass_blur != null) root.setProperty('--studio-blur', `${state.glass_blur}px`)
-            if (state.glass_opacity != null) root.setProperty('--studio-glass-alpha', `${state.glass_opacity}%`)
-            if (state.glow_intensity != null) root.setProperty('--studio-glow', `${state.glow_intensity}%`)
-            if (state.backdrop_intensity != null) root.setProperty('--studio-backdrop-intensity', state.backdrop_intensity / 100)
+            if (state[prefix + 'glass_opacity'] != null) root.setProperty('--studio-glass-alpha', `${state[prefix + 'glass_opacity']}%`)
+            if (state[prefix + 'glow_intensity'] != null) root.setProperty('--studio-glow', `${state[prefix + 'glow_intensity']}%`)
+            if (state[prefix + 'backdrop_intensity'] != null) root.setProperty('--studio-backdrop-intensity', state[prefix + 'backdrop_intensity'] / 100)
             if (state.glass_refraction != null) document.querySelector('[data-studio-lens]')?.setAttribute('scale', state.glass_refraction)
 
             this.warnings = this.checkWarnings(state)
@@ -91,7 +97,9 @@
             if (! state) return []
 
             const warnings = []
-            const glassAlpha = state.skin === 'glass' ? (state.glass_opacity ?? 70) / 100 : 1
+            const isGlass = state.skin === 'glass'
+            const glassAlpha = isGlass ? (state.glass_opacity ?? 45) / 100 : 1
+            const darkGlassAlpha = isGlass ? (state.dark_glass_opacity ?? 40) / 100 : 1
             const lightText = state.gray_palette?.[950] ?? '#0C0C0C'
 
             const lightRatio = this.contrast(lightText, this.blend(state.surface, state.background, glassAlpha))
@@ -99,7 +107,7 @@
                 warnings.push(this.messages.lowContrast.replace(':ratio', lightRatio.toFixed(1)))
             }
 
-            const darkRatio = this.contrast('#FFFFFF', this.blend(state.dark_surface, state.dark_background, glassAlpha))
+            const darkRatio = this.contrast('#FFFFFF', this.blend(state.dark_surface, state.dark_background, darkGlassAlpha))
             if (darkRatio && darkRatio < 4.5 && state.dark_mode !== 'light') {
                 warnings.push(this.messages.lowContrastDark.replace(':ratio', darkRatio.toFixed(1)))
             }
@@ -168,7 +176,11 @@
 >
     <div class="fi-studio-notice">
         <x-filament::icon icon="heroicon-o-eye" class="fi-studio-icon" />
-        <span>{{ __('Changes preview live on this page. Save to apply them for everyone.') }}</span>
+        <span>
+            {{ $this instanceof \DealArt\FilamentStudio\Filament\Pages\MyAppearance
+                ? __('Changes preview live on this page. Save to keep them for you.')
+                : __('Changes preview live on this page. Save to apply them for everyone.') }}
+        </span>
     </div>
 
     <template x-for="warning in warnings" :key="warning">

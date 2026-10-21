@@ -77,6 +77,18 @@ class StudioSettings extends Settings
     // Sidebar builder: ['groups' => [...], 'items' => [...]], empty = Filament's default sidebar
     public array $navigation_layout = [];
 
+    // Per-theme values (the light theme uses the plain keys above)
+    public string $dark_primary;
+
+    public int $dark_glass_opacity;
+
+    public int $dark_backdrop_intensity;
+
+    public int $dark_glow_intensity;
+
+    // Skins users may pick for themselves; empty turns "My appearance" off
+    public array $user_skins = [];
+
     public int $glow_intensity;
 
     public static function group(): string

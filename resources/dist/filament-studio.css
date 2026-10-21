@@ -857,3 +857,196 @@ html[data-studio-skin='minimal'][dir='rtl'] .fi-sidebar-item.fi-active > .fi-sid
     color: #fff;
     background-color: var(--primary-500);
 }
+
+/* ------------------------------------------------------------------ */
+/* Appearance profiles                                                 */
+/* ------------------------------------------------------------------ */
+
+.fi-studio-profiles {
+    display: grid;
+    row-gap: 0.625rem;
+}
+
+.fi-studio-profiles-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+}
+
+.fi-studio-profile-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+}
+
+.fi-studio-profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    border-radius: var(--radius-lg);
+    padding: 0.25rem;
+    background-color: color-mix(in oklab, var(--gray-500) 6%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--gray-500) 18%, transparent);
+}
+
+.fi-studio-profile:hover {
+    box-shadow: 0 0 0 2px var(--primary-500);
+}
+
+.fi-studio-profile-apply {
+    display: grid;
+    row-gap: 0.25rem;
+    min-width: 9rem;
+    padding: 0.375rem 0.5rem;
+    text-align: start;
+}
+
+.fi-studio-profile-swatches {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.fi-studio-profile-swatch {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--gray-500) 30%, transparent);
+}
+
+.fi-studio-profile-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-950);
+}
+
+.dark .fi-studio-profile-name {
+    color: #fff;
+}
+
+.fi-studio-profile-meta {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+/* ------------------------------------------------------------------ */
+/* Mini dashboard preview (drawn with the theme being edited)          */
+/* ------------------------------------------------------------------ */
+
+.fi-studio-mini {
+    display: grid;
+    row-gap: 0.5rem;
+}
+
+/* Beside the controls on wide screens, the preview stays in view while scrolling. */
+@media (min-width: 64rem) {
+    .fi-studio-mini {
+        position: sticky;
+        top: 5rem;
+    }
+}
+
+.fi-studio-mini-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.fi-studio-mini-canvas {
+    display: grid;
+    row-gap: 0.5rem;
+    padding: 0.625rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--gray-500) 25%, transparent);
+    transition: background-color 200ms ease;
+}
+
+.fi-studio-mini-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.fi-studio-mini-logo {
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-size: 0.625rem;
+}
+
+.fi-studio-mini-search {
+    width: 40%;
+    height: 0.875rem;
+    border-radius: 9999px;
+}
+
+.fi-studio-mini-body {
+    display: grid;
+    grid-template-columns: 34% minmax(0, 1fr);
+    gap: 0.5rem;
+}
+
+.fi-studio-mini-sidebar {
+    display: grid;
+    align-content: start;
+    row-gap: 0.25rem;
+    padding: 0.375rem;
+    border-radius: 0.5rem;
+    min-height: 9rem;
+}
+
+.fi-studio-mini-nav {
+    padding: 0.3rem 0.4rem;
+    border-radius: 0.375rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fi-studio-mini-main {
+    display: grid;
+    align-content: start;
+    row-gap: 0.5rem;
+}
+
+.fi-studio-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.fi-studio-mini-card {
+    display: grid;
+    row-gap: 0.3rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.fi-studio-mini-card strong {
+    font-size: 0.9375rem;
+}
+
+.fi-studio-mini-line {
+    height: 0.1875rem;
+    border-radius: 9999px;
+    opacity: 0.85;
+}
+
+.fi-studio-mini-field {
+    height: 1.125rem;
+    border-radius: 0.375rem;
+}
+
+.fi-studio-mini-button {
+    justify-self: start;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.375rem;
+    color: #fff;
+    font-weight: 600;
+}

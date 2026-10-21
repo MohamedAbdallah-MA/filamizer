@@ -3,7 +3,9 @@
 namespace DealArt\FilamentStudio;
 
 use Closure;
+use DealArt\FilamentStudio\Filament\Pages\MyAppearance;
 use DealArt\FilamentStudio\Support\StudioTheme;
+use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
 use Filament\FontProviders\GoogleFontProvider;
 use Filament\Panel;
@@ -71,7 +73,15 @@ class StudioPlugin implements Plugin
             ->renderHook(
                 PanelsRenderHook::BODY_END,
                 fn () => view('filament-studio::liquid-glass'),
-            );
+            )
+            ->pages([MyAppearance::class])
+            ->userMenuItems([
+                'studio-appearance' => Action::make('studio-appearance')
+                    ->label(fn (): string => __('My appearance'))
+                    ->icon('heroicon-o-swatch')
+                    ->url(fn (): string => MyAppearance::getUrl())
+                    ->visible(fn (): bool => MyAppearance::canAccess()),
+            ]);
     }
 
     public function boot(Panel $panel): void
