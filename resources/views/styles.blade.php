@@ -5,14 +5,30 @@
     $dark = StudioTheme::surfaces(dark: true);
     $radii = StudioTheme::radii();
     $secondaryFont = StudioTheme::secondaryFontFor();
-    $backdropImage = StudioTheme::backdrop() === 'image' ? StudioTheme::backdropImageUrl() : null;
+    $backdropImage = StudioTheme::backdropImageUrl();
+    $darkBackdropImage = StudioTheme::backdropImageUrl(dark: true);
 @endphp
 
 {{-- Set before first paint so the skin never flashes. --}}
 <script>
-    document.documentElement.dataset.studioSkin = @js(StudioTheme::skin());
-    document.documentElement.dataset.studioSidebar = @js(StudioTheme::sidebarStyle());
-    document.documentElement.dataset.studioBackdrop = @js(StudioTheme::backdrop());
+    (() => {
+        const html = document.documentElement;
+        const looks = {
+            light: { skin: @js(StudioTheme::skin()), backdrop: @js(StudioTheme::backdrop()), motion: @js(StudioTheme::isAuroraAnimated() ? 'on' : 'off'), refraction: {{ StudioTheme::range('glass_refraction') }} },
+            dark: { skin: @js(StudioTheme::skin(dark: true)), backdrop: @js(StudioTheme::backdrop(dark: true)), motion: @js(StudioTheme::isAuroraAnimated(dark: true) ? 'on' : 'off'), refraction: {{ StudioTheme::range('dark_glass_refraction') }} },
+        };
+        const applyMode = () => {
+            const look = looks[html.classList.contains('dark') ? 'dark' : 'light'];
+            html.dataset.studioSkin = look.skin;
+            html.dataset.studioBackdrop = look.backdrop;
+            html.dataset.studioMotion = look.motion;
+            document.querySelector('[data-studio-lens]')?.setAttribute('scale', look.refraction);
+        };
+        html.dataset.studioSidebar = @js(StudioTheme::sidebarStyle());
+        applyMode();
+        new MutationObserver(applyMode).observe(html, { attributes: true, attributeFilter: ['class'] });
+        document.addEventListener('DOMContentLoaded', applyMode, { once: true });
+    })();
 </script>
 
 @if ($secondaryFont !== StudioTheme::fontFor())
@@ -21,6 +37,8 @@
 
 <style id="filament-studio-styles">
     :root {
+        --studio-text-color: {{ StudioTheme::color('text_color') }};
+        --studio-muted-text-color: {{ StudioTheme::color('muted_text_color') }};
         --studio-background: {{ $light['background'] }};
         --studio-surface: {{ $light['surface'] }};
         --studio-input: {{ $light['input'] }};
@@ -36,21 +54,40 @@
         --studio-glass-alpha: {{ StudioTheme::range('glass_opacity') }}%;
         --studio-glow: {{ StudioTheme::range('glow_intensity') }}%;
         --studio-backdrop-intensity: {{ StudioTheme::range('backdrop_intensity') / 100 }};
+        --studio-backdrop-angle: {{ StudioTheme::range('backdrop_angle') }}deg;
+        --studio-aurora-duration: {{ StudioTheme::range('aurora_speed') }}s;
+        @foreach ([1, 2, 3] as $index)
+            --studio-backdrop-color-{{ $index }}: {{ StudioTheme::color('backdrop_color_'.$index) }};
+        @endforeach
         @if ($backdropImage)
             --studio-backdrop-image: {!! StudioTheme::cssUrl($backdropImage) !!};
         @endif
     }
 
     :root.dark {
+        --studio-text-color: {{ StudioTheme::color('dark_text_color') }};
+        --studio-muted-text-color: {{ StudioTheme::color('dark_muted_text_color') }};
         --studio-background: {{ $dark['background'] }};
         --studio-surface: {{ $dark['surface'] }};
         --studio-input: {{ $dark['input'] }};
         --studio-border: {{ $dark['border'] }};
+        --studio-blur: {{ StudioTheme::range('dark_glass_blur') }}px;
         --studio-glass-alpha: {{ StudioTheme::range('dark_glass_opacity') }}%;
         --studio-glow: {{ StudioTheme::range('dark_glow_intensity') }}%;
         --studio-backdrop-intensity: {{ StudioTheme::range('dark_backdrop_intensity') / 100 }};
-        @foreach (StudioTheme::darkPrimaryPalette() as $shade => $value)
-            --primary-{{ $shade }}: {{ $value }};
+        --studio-backdrop-angle: {{ StudioTheme::range('dark_backdrop_angle') }}deg;
+        --studio-aurora-duration: {{ StudioTheme::range('dark_aurora_speed') }}s;
+        @foreach ([1, 2, 3] as $index)
+            --studio-backdrop-color-{{ $index }}: {{ StudioTheme::color('dark_backdrop_color_'.$index) }};
+        @endforeach
+        --studio-backdrop-image: {!! $darkBackdropImage ? StudioTheme::cssUrl($darkBackdropImage) : 'none' !!};
+        @foreach (StudioTheme::grayPalette(dark: true) as $shade => $value)
+            --gray-{{ $shade }}: {{ $value }};
+        @endforeach
+        @foreach (StudioTheme::SEMANTIC_COLORS as $name)
+            @foreach (StudioTheme::darkColorPalette($name) as $shade => $value)
+                --{{ $name }}-{{ $shade }}: {{ $value }};
+            @endforeach
         @endforeach
     }
 

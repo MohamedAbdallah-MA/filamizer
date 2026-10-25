@@ -194,12 +194,14 @@ Host-app touch points (outside the package):
 | Semantic colors | `primary` `success` `warning` `danger` `info` (hex) |
 | Neutral | `gray_palette` (50…950 hex map) |
 | Light surfaces | `background` `surface` `input` `border` |
+| Text | `text_color` and `muted_text_color`, with independent `dark_` values; safe hex colors |
 | Dark theme | `dark_primary` `dark_background` `dark_surface` `dark_input` `dark_border` |
 | Typography | `font_arabic` `font_latin` `font_size` (sm/md/lg/xl → 93.75–112.5 % root size) |
 | Layout | `density` (compact/comfortable/spacious → `--spacing`) `radius` (none…xl → `--radius-*`) |
 | Dark mode policy | `dark_mode` (toggle/light/dark) `default_theme_mode` (system/light/dark) |
-| Skin | `skin` `sidebar_style` (classic/floating/collapsible) `backdrop` (none/gradient/mesh/aurora/image) `backdrop_image` |
-| Effect strengths | `glass_blur` `glass_refraction` · light: `glass_opacity` `glow_intensity` `backdrop_intensity` · dark: `dark_glass_opacity` `dark_glow_intensity` `dark_backdrop_intensity` |
+| Skins & backdrops | Light/dark `skin`, `backdrop` (none/gradient/mesh/aurora/image), `backdrop_image`; shared `sidebar_style` (classic/floating/collapsible) |
+| Effect strengths | Light/dark `glass_blur`, `glass_refraction`, `glass_opacity`, `glow_intensity`, `backdrop_intensity` |
+| Backdrop controls | Light/dark `backdrop_color_1/2/3`, `backdrop_angle` (0–360), `aurora_speed` (4–30 seconds), `aurora_animated` |
 | Sidebar builder | `navigation_layout` (array, see §9.4) |
 | Personal looks | `user_skins` (skins users may pick; `[]` disables My appearance) |
 
@@ -218,7 +220,8 @@ profile created from the admin tab, visible to everyone. Users see shared + thei
 can delete only their own. Admin profiles store all appearance keys except
 `navigation_layout, user_skins, dark_mode, default_theme_mode`; user profiles store
 `user_keys`. Applying a profile only fills the form; **nothing changes until Save**.
-Limit: `profiles.max_per_user` (20).
+Limit: `profiles.max_per_user` (20); updating an existing name is allowed at the limit.
+Profile mutations and resets check page authorization on the server, including Livewire calls.
 
 ## 9. Subsystems in detail
 
@@ -237,11 +240,17 @@ Limit: `profiles.max_per_user` (20).
   Refraction (`url(#studio-liquid-lens)`) only on floating surfaces (topbar, sidebar,
   modals, dropdowns) through `--studio-glass-lens`; cards reset it to `initial` (cost).
   Fallbacks: `@supports not (backdrop-filter)` and `prefers-reduced-transparency` → solid.
+  Glass inputs and sections create stacking contexts: `:focus-within` raises both
+  levels so select menus and color pickers stay above later fields/sections. Select
+  option panels use a solid surface without refraction for readability. Color inputs
+  explicitly use LTR direction so hex values keep their `#` prefix in Arabic.
 - **Neon**: glow from `--studio-glow` on cards, primary buttons, active nav item, focused inputs.
 - **Soft** / **Minimal**: shadows vs hairlines. **Classic**: Filament + colors.
 - **Backdrops**: gradient/mesh scale by `--studio-backdrop-strength`
-  (= intensity × 1.35 in dark); Aurora = fixed blurred blobs on `.fi-body::before`,
-  animated (disabled for `prefers-reduced-motion`).
+  (= intensity × 1.35 in dark). Gradient uses two independent background colors and an
+  angle; mesh/Aurora use three. Aurora = fixed blurred blobs on `.fi-body::before`,
+  with configurable duration (default 14s), disabled by the motion toggle or
+  `prefers-reduced-motion`. Image uses a separate layer so intensity changes its opacity.
 - **Sidebar styles**: floating (≥64rem, margin + radius + surface), collapsible
   (`sidebarCollapsibleOnDesktop`, server-side → applies after save).
 - Editor UI classes (`.fi-studio-*`) are also in this file. Do **not** rely on Tailwind
@@ -249,21 +258,56 @@ Limit: `profiles.max_per_user` (20).
 
 ### 9.2 The editor (`StudioAppearanceEditor`)
 Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); state path
-`data.studio`.
-- **Simple view** (left) + **mini preview** (right, sticky on wide screens):
-  Skin (ToggleButtons; users only see `user_skins`), "Customize" Light/Dark switch
-  (`edit_mode`, UI-only, `dehydrated(false)`), per-theme fields via `themePair()`
-  (main color always; page background + cards for solid skins; glass opacity for glass;
-  glow for neon), Text size.
-- **Toolbar**: Show/Hide advanced (`show_advanced`, Hidden, UI-only), Copy to other theme
-  (copies colors/effects, not surfaces), Reset to default (confirm), Save as profile (modal).
-- **Advanced** (admin): presets, status colors, inputs & borders (both themes), glass &
-  backdrop (+ image upload), neutral palette, fonts & layout & sidebar style, dark-mode
-  policy + `user_skins`. **Advanced** (user): inputs & borders, glass & backdrop (no image).
-- Every persisted field uses `dehydratedWhenHidden()` so switching theme/skin/advanced
-  never drops unsaved edits. Selecting Glass while backdrop is `none` auto-switches to Aurora.
-- **No field may appear twice** in the schema (same state path) — that is why simple and
-  advanced fields are disjoint.
+`data.studio`. The current layout is an experiment on `codex/appearance-simplified-ux`.
+- **Profiles stay above the editor** in their own section, with a prominent **Save as
+  profile** header action. Cards name both Light and Dark looks and show their color
+  swatches and skins. Applying a profile fills the editor; Save changes persists the
+  active appearance. Shared/personal ownership and deletion rules are unchanged.
+- **Make it yours** contains two independent UI-only choices: **Mode to edit**
+  (`edit_mode`, Light/Dark) and **Editing tools** (`show_advanced`, Quick setup/Full
+  customization). Both tool levels use the same fields and state. Quick setup reduces
+  visible choices without replacing or resetting precise values.
+- **Style and color**: visual skin choices and main color; administrators also get an
+  optional **Starting palette** beside the main color. A starting palette initializes
+  that mode's semantic, text, surface and neutral colors. Full customization reveals
+  text color, secondary text color and card/sidebar tint in this same section; Glass
+  additionally shows opacity/blur/refraction, and Neon shows glow. Text controls are
+  available on My appearance and stored in profiles. Skin, backdrop, effects, palettes
+  and colors have independent `dark_` keys. Users can retain an inherited global skin
+  outside `user_skins`; it is removed from personal overrides rather than blocking Save.
+- **Page background**: Quick setup exposes the solid base color, visual background
+  choices, four optional backdrop palettes, Aurora motion, and admin image upload.
+  Full customization reveals exact colors, gradient direction, animation duration and
+  intensity beside those choices. Backdrop palettes affect only the edited mode's
+  background colors, never semantic colors. Their selector is UI-only. Users can retain
+  an inherited image backdrop but cannot upload images.
+- **Reading and layout**: text size in Quick setup; administrators additionally see
+  Arabic/English fonts, density, corner radius and sidebar style in Full customization.
+  These settings are shared by light and dark modes.
+- **Full customization** also exposes collapsible Inputs and borders sections; admin
+  editors additionally receive Status colors, Neutral Palette, and Dark mode and
+  personal looks. These sections keep the existing permission and field boundaries.
+- **Toolbar**: Copy to light/dark theme (confirm; copies colors/effects while preserving
+  background/card/input/border colors) and Reset to default (confirm). Save as profile
+  lives in the Profiles header, separate from saving the active appearance.
+- **Controls column + sticky compact preview**: the preview follows the full editor;
+  below 64rem it moves above the controls. A native `details` summary lets the user
+  collapse it, especially on small screens. `wire:ignore.self` preserves that choice
+  across Livewire updates. **Save changes** stays visible outside the disclosure and
+  calls the host page's existing validated `save` method, with a loading disabled state
+  and a personal/everyone scope note. Neutral control/preview frames remain readable
+  while the selected appearance changes.
+- **Hidden data is retained**: persisted fields and every hidden containing Grid/Group
+  use `dehydratedWhenHidden()`. Marking only the fields is insufficient: Filament would
+  omit a hidden parent's children on save. Switching tools, mode or skin must preserve
+  unsaved values. Selecting Glass over a `none` backdrop still selects Aurora for that
+  mode only.
+- **Validation reveals the relevant tools**: `ManagesStudioAppearance::onValidationError`
+  selects Full customization on a `data.studio.*` error and switches to the light/dark
+  mode containing its first invalid theme key, then delegates to the host's validation
+  handler. Validation never silently drops an invalid hidden setting.
+- **No field may appear twice** in the schema (same state path). Quick and full tools
+  reveal a single set of fields, rather than duplicating them.
 
 ### 9.3 Live preview and mini preview
 - `live-preview.blade.php`: watches `$wire.data.studio`, writes CSS variables inline on
@@ -271,8 +315,18 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
   sets the data-attributes, updates the lens `scale`, loads Google Fonts on demand, and
   computes **WCAG contrast warnings** (glass blended over background). Exact palettes
   arrive after save (the admin page reloads when studio values changed; My appearance always reloads).
+  Diagnostics live inside a native `details` popup behind the always-present "Preview
+  checks" counter. The popup is absolutely positioned: warnings must never add/remove
+  height above the editor, or crossing a contrast threshold while dragging a color
+  picker moves the picker under the pointer and creates a feedback loop. Warning keys
+  use stable indices so changing the ratio updates text without replacing the warning.
 - `mini-preview.blade.php`: a self-contained mini dashboard drawn with the **theme being
-  edited** (`edit_mode`), independent of the page's mode.
+  edited** (`edit_mode`), independent of the page's mode. Uses the same backdrop CSS,
+  colors, angle, image and animated Aurora as the dashboard; generic localized content.
+- `styles.blade.php` switches saved skin/backdrop/motion and SVG refraction when the
+  page's `.dark` class changes, including outside the editor. Both themes' colors and
+  effects are rendered as CSS variables. The live editor applies unsaved state for the
+  page's active mode; selecting the mode to edit only changes the controls and mini preview.
 - **Hard rule:** no double quote `"` anywhere inside an `x-data="…"` block (it closes the
   attribute and the script prints as text). A test enforces this for both preview views.
 
@@ -315,21 +369,51 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
 
 ## 11. Current status (2026-10-22)
 
-**Committed:** phases 1–3 (`e653dad`, `79e3d89`, `fd5bada`).
+**Committed:** phases 1–3 and the first editor/profile redesign (through `93dc7f3`).
 
-**Uncommitted but working and tested** in the working tree on `feature/filament-studio`:
-the redesign (simple editor + advanced toggle + mini preview), per-theme light/dark
-values, profiles, Reset to default, per-user overrides, My appearance page, save-time
-sanitizing, the 2026_10_24 settings migration and the two new tables. The owner was
-about to try it before committing. Commit it with the files under
-`packages/deal-art/filament-studio`, `public/css/deal-art`, and the three
-`tests/Feature/FilamentStudio*Test.php` files (exclude the phone-input JS).
+**Current experiment branch:** `codex/appearance-simplified-ux`, created from
+`feature/filament-studio` with its existing uncommitted work carried forward. The branch
+is not a clean baseline diff: it contains the earlier fixes and migrations below as
+well as the new UX experiment. No existing profiles or settings were reset.
 
-**Tests:** `php artisan test --filter=FilamentStudio` → **62 passing, 739 assertions**
+**Inherited uncommitted work, verified before the experiment:** the approved
+skin/background editor layout, sticky generic preview, independent
+backdrop palettes/colors/angle, Aurora motion controls, popup stacking fixes, profile
+authorization/overwrite fixes, and inherited skin/image validation fixes. The new
+2026_10_25 settings migration seeds backdrop colors from existing semantic colors,
+preserving installed appearances. Existing profile rows remain intact.
+The 2026_10_26 migration separates previously shared values, initializes dark values
+from existing global settings, and extends legacy profile/preference JSON with the
+same dark values so their prior appearance is preserved. Existing independent dark
+keys in JSON are retained.
+The 2026_10_27 migration adds independent main/secondary text colors, seeded from the
+installed neutral palette (dark main text stays white). Applying an older profile
+derives missing text colors from its own stored gray palettes. Foreground CSS targets
+Filament headings, labels, values, inputs, descriptions and all sidebar item labels,
+without recoloring gray backgrounds or semantic primary/status components. The editor
+controls keep neutral foregrounds; the live page and mini preview use the selected
+text colors. Sidebar group headings use secondary text color. Selected item text uses
+main text color, while its icon and highlight retain the primary accent. The mini
+preview follows the same rule. Contrast checks also use the selected foregrounds.
+
+**UX experiment:** Quick setup and Full customization now share contextual controls;
+starting palettes sit next to main color, Profiles has its own Save as profile action,
+and the sticky preview supplies Save changes and a collapsible native disclosure.
+All former controls remain reachable and light/dark values remain independent. Hidden
+Grid/Group containers now explicitly dehydrate their contents, preventing precise
+values from being lost when saving Quick setup. Validation reveals Full customization
+and the affected theme when a hidden value needs correction. This experiment adds no
+settings migration. Its design and acceptance checks are in `docs/UX-EXPERIMENT.md`.
+
+**Previous verification baseline:** before this UX experiment,
+`php artisan test --filter=FilamentStudio` passed **78 tests, 887 assertions**
 (`FilamentStudioTest` 33 — appearance/skins, `FilamentStudioNavigationTest` 14 — sidebar
-builder, `FilamentStudioPersonalTest` 15 — per-user/profiles/per-theme). Full suite: 8 failures that
-**pre-date this work** (ExampleTest `/` redirect, NotificationSystemTest ×6,
-SubscriptionLifecycleTest renew) — verified by running them without the Studio wiring.
+builder, `FilamentStudioPersonalTest` 31 — per-user/profiles/per-theme/backgrounds/text/upgrade).
+The experiment's verification is separate and must be recorded after its checks finish.
+The previously recorded full-suite run had 8 failures that **pre-date this work**
+(ExampleTest `/` redirect, NotificationSystemTest ×6, SubscriptionLifecycleTest renew),
+verified by running them without the Studio wiring. This is not a claim that the
+current full project suite passes.
 
 **Local data notes:** the dev database currently has the owner's own experiments saved
 (red primary, Neon, collapsible sidebar, etc.). Don't "fix" them silently.
@@ -372,8 +456,8 @@ SubscriptionLifecycleTest renew) — verified by running them without the Studio
 - **Admin defaults / global** — the `StudioSettings` values; everyone's look unless overridden.
 - **Override** — a user's own value for a `user_keys` key, stored in `studio_user_preferences`.
 - **Skin** — overall visual style (Classic, Liquid Glass, Neon, Soft, Minimal).
-- **Solid skin** — Classic/Soft/Minimal: user picks page background, cards, main color per theme.
-- **Effect skin** — Liquid Glass/Neon: main color + effect strength per theme.
+- **Solid skin** — Classic/Soft/Minimal: main color and cards per theme; all skins support page backgrounds.
+- **Effect skin** — Liquid Glass/Neon: tint + effect strength; backdrop controls remain separate.
 - **Profile** — a saved bundle of values; shared (admin) or personal.
 - **Theme** — light or dark; each has its own set of `theme_keys`.
 - **Catalog** — the default sidebar items/groups Filament builds for the current user.

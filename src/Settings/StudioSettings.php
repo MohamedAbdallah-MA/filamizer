@@ -11,6 +11,14 @@ class StudioSettings extends Settings
     // Semantic colors
     public string $primary;
 
+    public string $text_color;
+
+    public string $muted_text_color;
+
+    public string $dark_text_color;
+
+    public string $dark_muted_text_color;
+
     public string $success;
 
     public string $warning;
@@ -90,6 +98,52 @@ class StudioSettings extends Settings
     public array $user_skins = [];
 
     public int $glow_intensity;
+
+    public string $backdrop_color_1;
+
+    public string $backdrop_color_2;
+
+    public string $backdrop_color_3;
+
+    public string $dark_backdrop_color_1;
+
+    public string $dark_backdrop_color_2;
+
+    public string $dark_backdrop_color_3;
+
+    public int $backdrop_angle;
+
+    public int $dark_backdrop_angle;
+
+    public int $aurora_speed;
+
+    public int $dark_aurora_speed;
+
+    public bool $aurora_animated;
+
+    public string $dark_skin;
+
+    public string $dark_backdrop;
+
+    public ?string $dark_backdrop_image = null;
+
+    public int $dark_glass_blur;
+
+    public int $dark_glass_refraction;
+
+    public bool $dark_aurora_animated;
+
+    public ?string $dark_preset = null;
+
+    public string $dark_success;
+
+    public string $dark_warning;
+
+    public string $dark_danger;
+
+    public string $dark_info;
+
+    public array $dark_gray_palette = [];
 
     public static function group(): string
     {

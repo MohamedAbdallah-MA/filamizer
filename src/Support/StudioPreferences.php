@@ -125,8 +125,10 @@ class StudioPreferences
     {
         $values = Arr::only($values, static::userKeys());
 
-        if (isset($values['skin']) && ! in_array($values['skin'], static::allowedSkins(), true)) {
-            unset($values['skin']);
+        foreach (['skin', 'dark_skin'] as $key) {
+            if (isset($values[$key]) && ! in_array($values[$key], static::allowedSkins(), true)) {
+                unset($values[$key]);
+            }
         }
 
         return $values;

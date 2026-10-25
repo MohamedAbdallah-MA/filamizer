@@ -2,8 +2,8 @@
 
 namespace DealArt\FilamentStudio\Support;
 
-use Filament\Support\Colors\Color;
 use Filament\Enums\ThemeMode;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -44,10 +44,10 @@ class StudioTheme
     /**
      * @return array<int, string>
      */
-    public static function grayPalette(): array
+    public static function grayPalette(bool $dark = false): array
     {
-        $stored = static::value('gray_palette');
-        $defaults = static::default('gray_palette');
+        $stored = static::value($dark ? 'dark_gray_palette' : 'gray_palette');
+        $defaults = static::default($dark ? 'dark_gray_palette' : 'gray_palette');
 
         return collect(self::GRAY_SHADES)
             ->mapWithKeys(fn (int $shade) => [
@@ -152,9 +152,9 @@ class StudioTheme
         };
     }
 
-    public static function skin(): string
+    public static function skin(bool $dark = false): string
     {
-        return static::option('skin', 'skins');
+        return static::option($dark ? 'dark_skin' : 'skin', 'skins');
     }
 
     public static function sidebarStyle(): string
@@ -167,23 +167,29 @@ class StudioTheme
         return static::sidebarStyle() === 'collapsible';
     }
 
-    public static function backdrop(): string
+    public static function backdrop(bool $dark = false): string
     {
-        $backdrop = static::option('backdrop', 'backdrops');
+        $backdrop = static::option($dark ? 'dark_backdrop' : 'backdrop', 'backdrops');
 
         // An image backdrop without an image falls back to the plain color.
-        return $backdrop === 'image' && ! static::backdropImageUrl() ? 'none' : $backdrop;
+        return $backdrop === 'image' && ! static::backdropImageUrl($dark) ? 'none' : $backdrop;
     }
 
-    public static function backdropImageUrl(): ?string
+    public static function backdropImageUrl(bool $dark = false): ?string
     {
-        $path = static::value('backdrop_image');
+        $path = static::value($dark ? 'dark_backdrop_image' : 'backdrop_image');
 
         if (! is_string($path) || $path === '') {
             return null;
         }
 
         return rescue(fn () => Storage::disk(config('filament-studio.backdrop_disk'))->url($path), null, false);
+    }
+
+    public static function isAuroraAnimated(bool $dark = false): bool
+    {
+        return filter_var(static::value($dark ? 'dark_aurora_animated' : 'aurora_animated'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+            ?? (bool) static::default('aurora_animated');
     }
 
     /**
@@ -217,7 +223,7 @@ class StudioTheme
     public static function sanitizeValues(array $values): array
     {
         $options = [
-            'skin' => 'skins', 'sidebar_style' => 'sidebar_styles', 'backdrop' => 'backdrops',
+            'skin' => 'skins', 'dark_skin' => 'skins', 'dark_backdrop' => 'backdrops', 'dark_preset' => 'themes', 'sidebar_style' => 'sidebar_styles', 'backdrop' => 'backdrops',
             'font_size' => 'font_sizes', 'density' => 'densities', 'radius' => 'radii',
             'dark_mode' => 'dark_modes', 'default_theme_mode' => 'default_theme_modes',
             'font_arabic' => 'fonts.arabic', 'font_latin' => 'fonts.latin', 'preset' => 'themes',
@@ -229,7 +235,7 @@ class StudioTheme
             $default = config("filament-studio.defaults.{$key}");
 
             if (isset($options[$key])) {
-                if ($value === null && $key === 'preset') {
+                if ($value === null && in_array($key, ['preset', 'dark_preset'], true)) {
                     $clean[$key] = null;
                 } elseif (in_array($value, array_keys(config("filament-studio.{$options[$key]}", [])), true)) {
                     $clean[$key] = $value;
@@ -240,7 +246,7 @@ class StudioTheme
                 if (is_numeric($value)) {
                     $clean[$key] = max($min, min($max, (int) $value));
                 }
-            } elseif ($key === 'gray_palette') {
+            } elseif (in_array($key, ['gray_palette', 'dark_gray_palette'], true)) {
                 if (is_array($value)) {
                     $clean[$key] = collect(self::GRAY_SHADES)
                         ->mapWithKeys(fn (int $shade) => [$shade => static::isHex($value[$shade] ?? null) ? $value[$shade] : $default[$shade]])
@@ -250,7 +256,13 @@ class StudioTheme
                 if (is_array($value)) {
                     $clean[$key] = array_values(array_intersect($value, array_keys(config('filament-studio.skins', []))));
                 }
-            } elseif ($key === 'backdrop_image' || $key === 'navigation_layout') {
+            } elseif (in_array($key, ['aurora_animated', 'dark_aurora_animated'], true)) {
+                $boolean = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+                if ($boolean !== null) {
+                    $clean[$key] = $boolean;
+                }
+            } elseif (in_array($key, ['backdrop_image', 'dark_backdrop_image'], true) || $key === 'navigation_layout') {
                 $clean[$key] = $value;
             } elseif (is_string($default) && str_starts_with($default, '#')) {
                 if (static::isHex($value)) {
@@ -271,7 +283,12 @@ class StudioTheme
      */
     public static function darkPrimaryPalette(): array
     {
-        return rescue(fn () => Color::generatePalette(static::color('dark_primary')), [], false);
+        return static::darkColorPalette('primary');
+    }
+
+    public static function darkColorPalette(string $color): array
+    {
+        return rescue(fn () => Color::generatePalette(static::color('dark_'.$color)), [], false);
     }
 
     public static function googleFontsUrl(string $family): string

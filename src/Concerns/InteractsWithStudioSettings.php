@@ -3,6 +3,7 @@
 namespace DealArt\FilamentStudio\Concerns;
 
 use DealArt\FilamentStudio\Settings\StudioSettings;
+use DealArt\FilamentStudio\StudioPlugin;
 use DealArt\FilamentStudio\Support\StudioPreferences;
 use DealArt\FilamentStudio\Support\StudioTheme;
 use Illuminate\Support\Arr;
@@ -36,6 +37,10 @@ trait InteractsWithStudioSettings
      */
     protected function saveStudioData(array $data): array
     {
+        if (! $this->canManageStudioAppearance()) {
+            return Arr::except($data, ['studio']);
+        }
+
         $studio = StudioTheme::sanitizeValues(Arr::only($data['studio'] ?? [], StudioSettings::fields()));
         unset($data['studio']);
 
@@ -74,6 +79,11 @@ trait InteractsWithStudioSettings
     protected function studioProfileOwnerId(): int|string|null
     {
         return null;
+    }
+
+    protected function canManageStudioAppearance(): bool
+    {
+        return StudioPlugin::get()?->userCanCustomize() ?? false;
     }
 
     protected function studioResetValues(): array

@@ -3,9 +3,12 @@
 namespace DealArt\FilamentStudio\Concerns;
 
 use DealArt\FilamentStudio\Models\StudioProfile;
+use DealArt\FilamentStudio\Support\StudioPreferences;
+use DealArt\FilamentStudio\Support\StudioTheme;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Profiles and "reset to default" for a page that hosts the appearance editor
@@ -29,6 +32,8 @@ trait ManagesStudioAppearance
      */
     abstract protected function studioResetValues(): array;
 
+    abstract protected function canManageStudioAppearance(): bool;
+
     /**
      * @return Collection<int, StudioProfile>
      */
@@ -45,19 +50,36 @@ trait ManagesStudioAppearance
 
     public function canDeleteStudioProfile(StudioProfile $profile): bool
     {
-        return $profile->user_id === $this->studioProfileOwnerId()
-            || ($profile->isShared() && $this->studioProfileOwnerId() === null);
+        return $this->canManageStudioAppearance()
+            && ($profile->user_id === $this->studioProfileOwnerId()
+                || ($profile->isShared() && $this->studioProfileOwnerId() === null));
     }
 
     public function applyStudioProfile(int $id): void
     {
+        abort_unless($this->canManageStudioAppearance(), 403);
+
         $profile = $this->getStudioProfiles()->firstWhere('id', $id);
 
         if (! $profile) {
             return;
         }
 
-        $this->setStudioState(Arr::only($profile->data ?? [], $this->studioEditableKeys()));
+        $values = StudioTheme::sanitizeValues(Arr::only($profile->data ?? [], $this->studioEditableKeys()));
+
+        // Profiles created before text controls took their foregrounds from gray.
+        foreach (['' => 'gray_palette', 'dark_' => 'dark_gray_palette'] as $prefix => $palette) {
+            if (isset($values[$palette])) {
+                $values[$prefix.'text_color'] ??= $prefix ? '#FFFFFF' : $values[$palette][950];
+                $values[$prefix.'muted_text_color'] ??= $values[$palette][$prefix ? 400 : 500];
+            }
+        }
+
+        if ($this->studioProfileOwnerId() !== null) {
+            $values = StudioPreferences::cleanOverrides($values);
+        }
+
+        $this->setStudioState($values);
 
         Notification::make()
             ->title(__('Profile ":name" applied. Save to keep it.', ['name' => $profile->name]))
@@ -67,6 +89,8 @@ trait ManagesStudioAppearance
 
     public function deleteStudioProfile(int $id): void
     {
+        abort_unless($this->canManageStudioAppearance(), 403);
+
         $profile = $this->getStudioProfiles()->firstWhere('id', $id);
 
         if (! $profile || ! $this->canDeleteStudioProfile($profile)) {
@@ -80,14 +104,18 @@ trait ManagesStudioAppearance
 
     public function saveStudioProfile(string $name): void
     {
+        abort_unless($this->canManageStudioAppearance(), 403);
+
         $owner = $this->studioProfileOwnerId();
-        $name = trim(strip_tags($name));
+        $name = mb_substr(trim(strip_tags($name)), 0, config('filament-studio.profiles.name_max_length', 40));
 
         if ($name === '') {
             return;
         }
 
-        if ($owner !== null && StudioProfile::query()->where('user_id', $owner)->count() >= config('filament-studio.profiles.max_per_user', 20)) {
+        $existing = StudioProfile::query()->where('user_id', $owner)->where('name', $name)->exists();
+
+        if (! $existing && $owner !== null && StudioProfile::query()->where('user_id', $owner)->count() >= config('filament-studio.profiles.max_per_user', 20)) {
             Notification::make()->title(__('You have reached the profile limit. Delete one first.'))->danger()->send();
 
             return;
@@ -95,7 +123,7 @@ trait ManagesStudioAppearance
 
         StudioProfile::query()->updateOrCreate(
             ['user_id' => $owner, 'name' => $name],
-            ['data' => Arr::only($this->data['studio'] ?? [], $this->studioEditableKeys())],
+            ['data' => StudioTheme::sanitizeValues(Arr::only($this->data['studio'] ?? [], $this->studioEditableKeys()))],
         );
 
         Notification::make()->title(__('Profile ":name" saved', ['name' => $name]))->success()->send();
@@ -103,6 +131,8 @@ trait ManagesStudioAppearance
 
     public function resetStudioAppearance(): void
     {
+        abort_unless($this->canManageStudioAppearance(), 403);
+
         $this->setStudioState($this->studioResetValues());
 
         Notification::make()->title(__('Default look restored. Save to keep it.'))->success()->send();
@@ -121,5 +151,29 @@ trait ManagesStudioAppearance
     protected function studioEditorState(): array
     {
         return ['edit_mode' => 'light', 'show_advanced' => false];
+    }
+
+    protected function onValidationError(ValidationException $exception): void
+    {
+        // A saved value can be invalid even when its precise control is hidden
+        // in Quick setup. Reveal the tools and mode containing the first error.
+        foreach (array_keys($exception->errors()) as $path) {
+            if (! str_starts_with($path, 'data.studio.')) {
+                continue;
+            }
+
+            $this->data['studio']['show_advanced'] = true;
+            $key = explode('.', substr($path, strlen('data.studio.')))[0];
+            foreach (['light', 'dark'] as $mode) {
+                if (in_array($key, config("filament-studio.theme_keys.{$mode}", []), true)) {
+                    $this->data['studio']['edit_mode'] = $mode;
+                    break;
+                }
+            }
+
+            break;
+        }
+
+        parent::onValidationError($exception);
     }
 }

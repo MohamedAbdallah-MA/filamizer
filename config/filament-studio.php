@@ -459,6 +459,13 @@ return [
         'image' => 'Image',
     ],
 
+    'backdrop_palettes' => [
+        'sky' => ['label' => 'Sky', 'colors' => ['#3B82F6', '#925EEA', '#29BBA3']],
+        'sea' => ['label' => 'Sea', 'colors' => ['#168A98', '#55B9BC', '#A8D5B0']],
+        'sunset' => ['label' => 'Sunset', 'colors' => ['#F4A76A', '#DC779D', '#9976D5']],
+        'gold' => ['label' => 'Gold', 'colors' => ['#B08C50', '#D2B880', '#F1D9BD']],
+    ],
+
     // Disk and folder for uploaded backdrop images.
     'backdrop_disk' => 'public',
 
@@ -467,13 +474,19 @@ return [
     // Allowed ranges for the skin sliders.
     'ranges' => [
         'glass_blur' => [4, 40],
+        'dark_glass_blur' => [4, 40],
         'glass_opacity' => [15, 90],
         'glass_refraction' => [0, 80],
+        'dark_glass_refraction' => [0, 80],
         'backdrop_intensity' => [0, 150],
         'glow_intensity' => [0, 100],
         'dark_glass_opacity' => [15, 90],
         'dark_backdrop_intensity' => [0, 150],
         'dark_glow_intensity' => [0, 100],
+        'backdrop_angle' => [0, 360],
+        'dark_backdrop_angle' => [0, 360],
+        'aurora_speed' => [4, 30],
+        'dark_aurora_speed' => [4, 30],
     ],
 
     /*
@@ -505,17 +518,22 @@ return [
 
     'user_keys' => [
         'skin', 'font_size',
+        'text_color', 'muted_text_color', 'dark_text_color', 'dark_muted_text_color',
         'primary', 'background', 'surface', 'input', 'border',
         'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border',
         'glass_blur', 'glass_refraction', 'glass_opacity', 'dark_glass_opacity',
         'glow_intensity', 'dark_glow_intensity',
         'backdrop', 'backdrop_intensity', 'dark_backdrop_intensity',
+        'backdrop_color_1', 'backdrop_color_2', 'backdrop_color_3',
+        'dark_backdrop_color_1', 'dark_backdrop_color_2', 'dark_backdrop_color_3',
+        'backdrop_angle', 'dark_backdrop_angle', 'aurora_speed', 'dark_aurora_speed', 'aurora_animated',
+        'dark_skin', 'dark_backdrop', 'dark_glass_blur', 'dark_glass_refraction', 'dark_aurora_animated',
     ],
 
     // The colors and effect strengths that are set separately for each theme.
     'theme_keys' => [
-        'light' => ['primary', 'background', 'surface', 'input', 'border', 'glass_opacity', 'glow_intensity', 'backdrop_intensity'],
-        'dark' => ['dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border', 'dark_glass_opacity', 'dark_glow_intensity', 'dark_backdrop_intensity'],
+        'light' => ['text_color', 'muted_text_color', 'skin', 'backdrop', 'backdrop_image', 'glass_blur', 'glass_refraction', 'aurora_animated', 'preset', 'success', 'warning', 'danger', 'info', 'gray_palette', 'primary', 'background', 'surface', 'input', 'border', 'glass_opacity', 'glow_intensity', 'backdrop_intensity', 'backdrop_color_1', 'backdrop_color_2', 'backdrop_color_3', 'backdrop_angle', 'aurora_speed'],
+        'dark' => ['dark_text_color', 'dark_muted_text_color', 'dark_skin', 'dark_backdrop', 'dark_backdrop_image', 'dark_glass_blur', 'dark_glass_refraction', 'dark_aurora_animated', 'dark_preset', 'dark_success', 'dark_warning', 'dark_danger', 'dark_info', 'dark_gray_palette', 'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border', 'dark_glass_opacity', 'dark_glow_intensity', 'dark_backdrop_intensity', 'dark_backdrop_color_1', 'dark_backdrop_color_2', 'dark_backdrop_color_3', 'dark_backdrop_angle', 'dark_aurora_speed'],
     ],
 
     'profiles' => [
@@ -534,6 +552,10 @@ return [
     */
 
     'defaults' => [
+        'text_color' => '#0C0C0C',
+        'muted_text_color' => '#8A8478',
+        'dark_text_color' => '#FFFFFF',
+        'dark_muted_text_color' => '#B0AB9E',
         'preset' => 'deal_art_gold',
         'primary' => '#B08C50',
         'success' => '#1E6B3C',
@@ -583,6 +605,41 @@ return [
         'dark_glow_intensity' => 60,
         'user_skins' => ['classic', 'glass', 'neon', 'soft', 'minimal'],
         'glow_intensity' => 60,
+        'backdrop_color_1' => '#B08C50',
+        'backdrop_color_2' => '#1A4A7C',
+        'backdrop_color_3' => '#1E6B3C',
+        'dark_backdrop_color_1' => '#B08C50',
+        'dark_backdrop_color_2' => '#1A4A7C',
+        'dark_backdrop_color_3' => '#1E6B3C',
+        'backdrop_angle' => 135,
+        'dark_backdrop_angle' => 135,
+        'aurora_speed' => 14,
+        'dark_aurora_speed' => 14,
+        'aurora_animated' => true,
+        'dark_skin' => 'classic',
+        'dark_backdrop' => 'none',
+        'dark_backdrop_image' => null,
+        'dark_glass_blur' => 16,
+        'dark_glass_refraction' => 40,
+        'dark_aurora_animated' => true,
+        'dark_preset' => 'deal_art_gold',
+        'dark_success' => '#1E6B3C',
+        'dark_warning' => '#92610A',
+        'dark_danger' => '#8B1A1A',
+        'dark_info' => '#1A4A7C',
+        'dark_gray_palette' => [
+            50 => '#FAFAF9',
+            100 => '#F5F4F1',
+            200 => '#E8E5DF',
+            300 => '#D4D0C9',
+            400 => '#B0AB9E',
+            500 => '#8A8478',
+            600 => '#6B6560',
+            700 => '#4E4A44',
+            800 => '#342F29',
+            900 => '#1A1612',
+            950 => '#0C0C0C',
+        ],
     ],
 
 ];

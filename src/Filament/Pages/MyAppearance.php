@@ -67,6 +67,8 @@ class MyAppearance extends SettingsPage
 
     public function save(): void
     {
+        abort_unless(static::canAccess(), 403);
+
         $data = $this->form->getState();
 
         StudioPreferences::make()->saveForUser(auth()->id(), Arr::only($data['studio'] ?? [], StudioPreferences::userKeys()));
@@ -86,6 +88,11 @@ class MyAppearance extends SettingsPage
     protected function studioProfileOwnerId(): int|string|null
     {
         return auth()->id();
+    }
+
+    protected function canManageStudioAppearance(): bool
+    {
+        return static::canAccess();
     }
 
     protected function studioResetValues(): array

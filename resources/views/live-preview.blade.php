@@ -1,5 +1,7 @@
 @php
     $statePath = $getStatePath();
+    $lightImage = \DealArt\FilamentStudio\Support\StudioTheme::backdropImageUrl();
+    $darkImage = \DealArt\FilamentStudio\Support\StudioTheme::backdropImageUrl(dark: true);
 
     $previewConfig = [
         'spacing' => collect(config('filament-studio.densities'))->map(fn ($d) => $d['spacing'])->all(),
@@ -21,6 +23,8 @@
         config: @js($previewConfig),
         messages: @js($messages),
         warnings: [],
+        images: { light: @js($lightImage ? \DealArt\FilamentStudio\Support\StudioTheme::cssUrl($lightImage) : 'none'), dark: @js($darkImage ? \DealArt\FilamentStudio\Support\StudioTheme::cssUrl($darkImage) : 'none') },
+        motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
         hexPattern: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
         // Share of the picked color per shade; light shades mix with white, dark ones with black.
         mixes: { 50: [10, 'white'], 100: [20, 'white'], 200: [35, 'white'], 300: [55, 'white'], 400: [78, 'white'], 500: [100, 'white'], 600: [85, 'black'], 700: [70, 'black'], 800: [56, 'black'], 900: [44, 'black'], 950: [30, 'black'] },
@@ -28,10 +32,14 @@
         init() {
             this.$watch('$wire.{{ $statePath }}', (state) => this.apply(state))
 
-            new MutationObserver(() => this.apply(this.$wire.get('{{ $statePath }}')))
-                .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+            this.modeObserver = new MutationObserver(() => this.apply(this.$wire.get('{{ $statePath }}')))
+            this.modeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 
             this.warnings = this.checkWarnings(this.$wire.get('{{ $statePath }}'))
+        },
+
+        destroy() {
+            this.modeObserver?.disconnect()
         },
 
         apply(state) {
@@ -42,13 +50,15 @@
             const isDark = html.classList.contains('dark')
             const prefix = isDark ? 'dark_' : ''
 
+            this.setColor(root, '--studio-text-color', state[prefix + 'text_color'])
+            this.setColor(root, '--studio-muted-text-color', state[prefix + 'muted_text_color'])
+
             for (const key of ['background', 'surface', 'input', 'border']) {
                 this.setColor(root, `--studio-${key}`, state[prefix + key])
             }
 
             for (const name of this.config.semantic) {
-                // The main color is set per theme; status colors are shared.
-                const color = name === 'primary' ? state[prefix + 'primary'] : state[name]
+                const color = state[prefix + name]
 
                 if (! this.hexPattern.test(color ?? '')) continue
 
@@ -57,7 +67,7 @@
                 }
             }
 
-            for (const [shade, hex] of Object.entries(state.gray_palette ?? {})) {
+            for (const [shade, hex] of Object.entries(state[prefix + 'gray_palette'] ?? {})) {
                 this.setColor(root, `--gray-${shade}`, hex)
             }
 
@@ -77,18 +87,28 @@
             }
 
             // Skins. A collapsible sidebar is a server-side panel option, so it only changes after saving.
-            if (state.skin) html.dataset.studioSkin = state.skin
+            if (state[prefix + 'skin']) html.dataset.studioSkin = state[prefix + 'skin']
             if (state.sidebar_style && state.sidebar_style !== 'collapsible') html.dataset.studioSidebar = state.sidebar_style
 
             // An image backdrop can only be previewed once an image has been saved.
-            const hasSavedImage = getComputedStyle(html).getPropertyValue('--studio-backdrop-image').trim() !== ''
-            if (state.backdrop) html.dataset.studioBackdrop = (state.backdrop === 'image' && ! hasSavedImage) ? 'none' : state.backdrop
+            const image = this.images[isDark ? 'dark' : 'light']
+            root.setProperty('--studio-backdrop-image', image)
+            const backdrop = state[prefix + 'backdrop']
+            if (backdrop) html.dataset.studioBackdrop = (backdrop === 'image' && image === 'none') ? 'none' : backdrop
+            html.dataset.studioMotion = state[prefix + 'aurora_animated'] === false || state[prefix + 'aurora_animated'] === 0 ? 'off' : 'on'
 
-            if (state.glass_blur != null) root.setProperty('--studio-blur', `${state.glass_blur}px`)
+            for (const index of [1, 2, 3]) {
+                this.setColor(root, `--studio-backdrop-color-${index}`, state[prefix + 'backdrop_color_' + index])
+            }
+
+            if (state[prefix + 'backdrop_angle'] != null) root.setProperty('--studio-backdrop-angle', `${Number(state[prefix + 'backdrop_angle'])}deg`)
+            if (state[prefix + 'aurora_speed'] != null) root.setProperty('--studio-aurora-duration', `${Number(state[prefix + 'aurora_speed'])}s`)
+
+            if (state[prefix + 'glass_blur'] != null) root.setProperty('--studio-blur', `${state[prefix + 'glass_blur']}px`)
             if (state[prefix + 'glass_opacity'] != null) root.setProperty('--studio-glass-alpha', `${state[prefix + 'glass_opacity']}%`)
             if (state[prefix + 'glow_intensity'] != null) root.setProperty('--studio-glow', `${state[prefix + 'glow_intensity']}%`)
             if (state[prefix + 'backdrop_intensity'] != null) root.setProperty('--studio-backdrop-intensity', state[prefix + 'backdrop_intensity'] / 100)
-            if (state.glass_refraction != null) document.querySelector('[data-studio-lens]')?.setAttribute('scale', state.glass_refraction)
+            if (state[prefix + 'glass_refraction'] != null) document.querySelector('[data-studio-lens]')?.setAttribute('scale', state[prefix + 'glass_refraction'])
 
             this.warnings = this.checkWarnings(state)
         },
@@ -97,17 +117,16 @@
             if (! state) return []
 
             const warnings = []
-            const isGlass = state.skin === 'glass'
-            const glassAlpha = isGlass ? (state.glass_opacity ?? 45) / 100 : 1
-            const darkGlassAlpha = isGlass ? (state.dark_glass_opacity ?? 40) / 100 : 1
-            const lightText = state.gray_palette?.[950] ?? '#0C0C0C'
+            const glassAlpha = state.skin === 'glass' ? (state.glass_opacity ?? 45) / 100 : 1
+            const darkGlassAlpha = state.dark_skin === 'glass' ? (state.dark_glass_opacity ?? 40) / 100 : 1
+            const lightText = state.text_color ?? state.gray_palette?.[950] ?? '#0C0C0C'
 
             const lightRatio = this.contrast(lightText, this.blend(state.surface, state.background, glassAlpha))
             if (lightRatio && lightRatio < 4.5 && state.dark_mode !== 'dark') {
                 warnings.push(this.messages.lowContrast.replace(':ratio', lightRatio.toFixed(1)))
             }
 
-            const darkRatio = this.contrast('#FFFFFF', this.blend(state.dark_surface, state.dark_background, darkGlassAlpha))
+            const darkRatio = this.contrast(state.dark_text_color ?? '#FFFFFF', this.blend(state.dark_surface, state.dark_background, darkGlassAlpha))
             if (darkRatio && darkRatio < 4.5 && state.dark_mode !== 'light') {
                 warnings.push(this.messages.lowContrastDark.replace(':ratio', darkRatio.toFixed(1)))
             }
@@ -116,7 +135,8 @@
                 warnings.push(this.messages.neonLight)
             }
 
-            if (state.skin === 'glass' && state.backdrop === 'none') {
+            const editPrefix = state.edit_mode === 'dark' ? 'dark_' : ''
+            if (state[editPrefix + 'skin'] === 'glass' && state[editPrefix + 'backdrop'] === 'none') {
                 warnings.push(this.messages.glassPlain)
             }
 
@@ -183,10 +203,28 @@
         </span>
     </div>
 
-    <template x-for="warning in warnings" :key="warning">
-        <div class="fi-studio-warning" data-studio-warning>
-            <x-filament::icon icon="heroicon-o-exclamation-triangle" class="fi-studio-icon" />
-            <span x-text="warning"></span>
+    <div class="fi-studio-notice" x-show="motionReduced && ($wire.{{ $statePath }}.edit_mode === 'dark' ? $wire.{{ $statePath }}.dark_backdrop : $wire.{{ $statePath }}.backdrop) === 'aurora'" x-cloak>
+        {{ __('Animation is paused because your device requests reduced motion.') }}
+    </div>
+
+    {{-- Keep changing diagnostics out of the form's flow: a contrast threshold can
+         otherwise move the color picker underneath the pointer during a drag. --}}
+    <details class="fi-studio-checks"
+        x-bind:data-has-warnings="warnings.length > 0 ? 'true' : 'false'"
+        x-on:click.outside="$el.open = false"
+        x-on:keydown.escape.prevent.stop="$el.open = false">
+        <summary>
+            <span>{{ __('Preview checks') }}</span>
+            <span class="fi-studio-checks-count" x-text="warnings.length" aria-live="polite" aria-atomic="true"></span>
+        </summary>
+        <div class="fi-studio-checks-panel">
+            <p class="fi-studio-notice" x-show="! warnings.length">{{ __('No preview warnings.') }}</p>
+            <template x-for="(warning, index) in warnings" :key="index">
+                <div class="fi-studio-warning" data-studio-warning>
+                    <x-filament::icon icon="heroicon-o-exclamation-triangle" class="fi-studio-icon" />
+                    <span x-text="warning"></span>
+                </div>
+            </template>
         </div>
-    </template>
+    </details>
 </div>
