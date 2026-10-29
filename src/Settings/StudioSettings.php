@@ -78,6 +78,10 @@ class StudioSettings extends Settings
 
     public int $glass_opacity;
 
+    public bool $glass_auto_readability = true;
+
+    public bool $dark_glass_auto_readability = true;
+
     public int $glass_refraction;
 
     public int $backdrop_intensity;

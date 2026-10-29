@@ -15,6 +15,7 @@
         'lowContrastDark' => __('Text on dark cards may be hard to read (contrast :ratio:1, aim for at least 4.5:1).'),
         'neonLight' => __('Neon is designed for dark mode. Consider "Dark only" or a dark default mode.'),
         'glassPlain' => __('Glass looks flat over a plain color. Try the Aurora, mesh, gradient, or image backdrop.'),
+        'glassContrast' => __('Glass can make text and placeholders hard to read. Enable Automatic readability or adjust your colors and opacity.'),
     ];
 @endphp
 
@@ -110,6 +111,8 @@
             if (state[prefix + 'backdrop_intensity'] != null) root.setProperty('--studio-backdrop-intensity', state[prefix + 'backdrop_intensity'] / 100)
             if (state[prefix + 'glass_refraction'] != null) document.querySelector('[data-studio-lens]')?.setAttribute('scale', state[prefix + 'glass_refraction'])
 
+            window.filamentStudioReadability.apply(state, isDark)
+
             this.warnings = this.checkWarnings(state)
         },
 
@@ -121,14 +124,25 @@
             const darkGlassAlpha = state.dark_skin === 'glass' ? (state.dark_glass_opacity ?? 40) / 100 : 1
             const lightText = state.text_color ?? state.gray_palette?.[950] ?? '#0C0C0C'
 
-            const lightRatio = this.contrast(lightText, this.blend(state.surface, state.background, glassAlpha))
+            const readabilityRatio = (dark) => {
+                const look = window.filamentStudioReadability.resolve(state, dark)
+                return Math.min(
+                    window.filamentStudioReadability.minimumContrast(look.surfaceText, look.bounds.surface),
+                    window.filamentStudioReadability.minimumContrast(look.surfaceMuted, look.bounds.surface),
+                    window.filamentStudioReadability.minimumContrast(look.inputText, look.bounds.input),
+                    window.filamentStudioReadability.minimumContrast(look.inputMuted, look.bounds.input),
+                    window.filamentStudioReadability.minimumContrast(look.bodyText, look.bounds.page),
+                    window.filamentStudioReadability.minimumContrast(look.bodyMuted, look.bounds.page),
+                )
+            }
+            const lightRatio = state.skin === 'glass' ? readabilityRatio(false) : this.contrast(lightText, this.blend(state.surface, state.background, glassAlpha))
             if (lightRatio && lightRatio < 4.5 && state.dark_mode !== 'dark') {
-                warnings.push(this.messages.lowContrast.replace(':ratio', lightRatio.toFixed(1)))
+                warnings.push(state.skin === 'glass' ? this.messages.glassContrast : this.messages.lowContrast.replace(':ratio', lightRatio.toFixed(1)))
             }
 
-            const darkRatio = this.contrast(state.dark_text_color ?? '#FFFFFF', this.blend(state.dark_surface, state.dark_background, darkGlassAlpha))
+            const darkRatio = state.dark_skin === 'glass' ? readabilityRatio(true) : this.contrast(state.dark_text_color ?? '#FFFFFF', this.blend(state.dark_surface, state.dark_background, darkGlassAlpha))
             if (darkRatio && darkRatio < 4.5 && state.dark_mode !== 'light') {
-                warnings.push(this.messages.lowContrastDark.replace(':ratio', darkRatio.toFixed(1)))
+                warnings.push(state.dark_skin === 'glass' ? this.messages.glassContrast : this.messages.lowContrastDark.replace(':ratio', darkRatio.toFixed(1)))
             }
 
             if (state.skin === 'neon' && (state.dark_mode === 'light' || (state.dark_mode === 'toggle' && state.default_theme_mode === 'light'))) {

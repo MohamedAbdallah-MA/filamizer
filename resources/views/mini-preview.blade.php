@@ -25,9 +25,10 @@
         get surface() { return this.hex(this.pick('surface'), this.dark ? '#1A1612' : '#FFFFFF') },
         get input() { return this.hex(this.pick('input'), this.surface) },
         get border() { return this.hex(this.pick('border'), this.dark ? '#342F29' : '#E8E5DF') },
-        get text() { return this.hex(this.pick('text_color'), this.dark ? '#FFFFFF' : '#0C0C0C') },
-        get muted() { return this.hex(this.pick('muted_text_color'), this.dark ? '#B0AB9E' : '#8A8478') },
-        get glassAlpha() { return Number(this.pick('glass_opacity') ?? 45) },
+        get readability() { return window.filamentStudioReadability.resolve(this.state, this.dark) },
+        get text() { return this.readability.surfaceText },
+        get muted() { return this.readability.surfaceMuted },
+        get glassAlpha() { return this.readability.glassOpacity },
         get glow() { return Number(this.pick('glow_intensity') ?? 60) },
         canvasStyle() {
             const strength = Number(this.pick('backdrop_intensity') ?? 100) / 100 * (this.dark ? 1.35 : 1)
@@ -41,6 +42,7 @@
                 '--studio-backdrop-angle': `${Number(this.pick('backdrop_angle') ?? 135)}deg`,
                 '--studio-aurora-duration': `${Number(this.pick('aurora_speed') ?? 14)}s`,
                 '--studio-backdrop-image': this.imageCss,
+                '--studio-page-scrim': this.readability.pageScrim,
             }
         },
         panelStyle() {
@@ -89,6 +91,7 @@
             <div class="fi-studio-mini-canvas" x-bind:style="canvasStyle()"
                 x-bind:data-studio-backdrop="pick('backdrop') === 'image' && imageCss === 'none' ? 'none' : (pick('backdrop') ?? 'none')"
                 x-bind:data-studio-motion="pick('aurora_animated') === false || pick('aurora_animated') === 0 ? 'off' : 'on'"
+                x-bind:data-studio-readable="readability.automatic ? 'auto' : 'manual'"
                 dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
                 <div class="fi-studio-mini-topbar" x-bind:style="panelStyle()">
                     <span class="fi-studio-mini-logo" x-bind:style="{ color: text }">{{ __('Dashboard') }}</span>

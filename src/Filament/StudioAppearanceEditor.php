@@ -143,6 +143,10 @@ class StudioAppearanceEditor
                             ->helperText(__('Descriptions, hints and sidebar group headings.'))),
                         ...static::themePair('surface', fn (string $key) => static::colorPicker($key, __('Cards and sidebar'))
                             ->label(fn (Get $get) => static::editingValue($get, 'skin') === 'glass' ? __('Glass tint') : __('Cards and sidebar'))),
+                        ...static::themePair('glass_auto_readability', fn (string $key) => Toggle::make($key)
+                            ->label(__('Automatic readability'))
+                            ->helperText(__('Adjusts text colors and glass strength when needed. Turn off to use your exact colors and opacity. Your chosen values stay saved.'))
+                            ->live()->dehydratedWhenHidden(), fn (Get $get) => static::editingValue($get, 'skin') === 'glass'),
                         ...static::themePair('glass_opacity', fn (string $key) => static::slider($key, __('Glass opacity')), fn (Get $get) => static::editingValue($get, 'skin') === 'glass'),
                         ...static::themePair('glass_blur', fn (string $key) => static::slider($key, __('Blur')), fn (Get $get) => static::editingValue($get, 'skin') === 'glass'),
                         ...static::themePair('glass_refraction', fn (string $key) => static::slider($key, __('Refraction'))

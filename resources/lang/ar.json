@@ -245,5 +245,8 @@
     "Light": "فاتح",
     "Dark": "داكن",
     "Delete profile :name": "حذف ملف المظهر :name",
-    "Choose a solid color or a ready-made blend.": "اختر لوناً سادة أو تدرجاً جاهزاً."
+    "Choose a solid color or a ready-made blend.": "اختر لوناً سادة أو تدرجاً جاهزاً.",
+    "Automatic readability": "وضوح تلقائي للنصوص",
+    "Glass can make text and placeholders hard to read. Enable Automatic readability or adjust your colors and opacity.": "قد يجعل الزجاج النصوص والنصوص الإرشادية صعبة القراءة. فعّل وضوح النصوص التلقائي أو عدّل ألوانك وشفافيتك.",
+    "Adjusts text colors and glass strength when needed. Turn off to use your exact colors and opacity. Your chosen values stay saved.": "يضبط ألوان النصوص وكثافة الزجاج عند الحاجة. أوقفه لاستخدام ألوانك وشفافيتك كما اخترتها تماماً. تبقى القيم التي اخترتها محفوظة."
 }

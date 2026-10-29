@@ -252,7 +252,7 @@ class StudioNavigation
             }
 
             if ($entry['icon']) {
-                $item->icon($entry['icon']);
+                $item->icon($entry['icon'])->activeIcon($entry['icon']);
             }
 
             $buckets[$entry['group']][] = $item;

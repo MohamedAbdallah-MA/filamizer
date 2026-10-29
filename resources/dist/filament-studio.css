@@ -1,3 +1,6 @@
+/* Preserve Filament/Tailwind's order even when this asset loads first. */
+@layer properties, theme, base, components, utilities;
+
 /*
  * Filament Studio skins.
  *
@@ -22,6 +25,7 @@ html[data-studio-skin] .fi-body {
 html[data-studio-skin] :is(
     .fi-header-heading, .fi-simple-header-heading, .fi-section-header-heading,
     .fi-modal-heading, .fi-fo-field-label-content, .fi-input, .fi-textarea,
+    .fi-fo-textarea textarea, .fi-ta-empty-state-heading,
     .fi-select-input, .fi-select-input-btn, .fi-select-input-value-label, .fi-select-option-label,
     .fi-ta-text-item, .fi-ta-header-cell-label, .fi-ta-heading,
     .fi-in-text-item, .fi-in-entry-label,
@@ -45,13 +49,25 @@ html[data-studio-skin] :is(
     .fi-sc-text, .fi-in-entry-helper-text, .fi-in-entry-hint,
     .fi-ta-text-description, .fi-ta-text-list-limited-message,
     .fi-in-text-description, .fi-in-text-list-limited-message,
-    .fi-wi-stats-overview-stat-description, .fi-sidebar-group-label
+    .fi-wi-stats-overview-stat-description, .fi-sidebar-group-label,
+    .fi-select-input-placeholder, .fi-select-input-message, .fi-input-wrp-label,
+    .fi-select-input-option-group .fi-dropdown-header, .fi-ta-empty-state-description
 ):not(.fi-color:not(.fi-color-gray), .fi-color:not(.fi-color-gray) *) {
     color: var(--studio-muted-text-color);
 }
 
-html[data-studio-skin] :is(.fi-input, .fi-textarea)::placeholder {
+html[data-studio-skin] :is(.fi-input, .fi-textarea, .fi-fo-textarea textarea)::placeholder {
     color: var(--studio-muted-text-color);
+    opacity: 1;
+}
+
+/* FilePond's label colors are important declarations in Filament's components
+ * layer. Override them in that same layer; an unlayered important rule loses.
+ * Browse keeps its own primary color, and upload/error states are untouched. */
+@layer components {
+    html[data-studio-skin] .fi-fo-file-upload :is(.filepond--drop-label, .filepond--drop-label label) {
+        color: var(--studio-muted-text-color) !important;
+    }
 }
 
 /* ------------------------------------------------------------------ */
@@ -235,7 +251,7 @@ html[data-studio-motion='off'][data-studio-backdrop='aurora'] .fi-body::before,
 
 html[data-studio-skin='glass'] {
     --studio-glass-tint: color-mix(in oklab, var(--studio-surface) var(--studio-glass-alpha, 45%), transparent);
-    --studio-glass-input: color-mix(in oklab, var(--studio-input) calc(var(--studio-glass-alpha, 45%) - 5%), transparent);
+    --studio-glass-input: color-mix(in oklab, var(--studio-input) var(--studio-glass-input-alpha, calc(var(--studio-glass-alpha, 45%) - 5%)), transparent);
     --studio-glass-filter: blur(var(--studio-blur, 16px)) saturate(185%) brightness(1.06);
     --studio-glass-rim-strong: rgb(255 255 255 / 0.95);
     --studio-glass-rim-soft: rgb(255 255 255 / 0.3);
@@ -243,6 +259,61 @@ html[data-studio-skin='glass'] {
     --studio-glass-glow: rgb(255 255 255 / 0.18);
     --studio-glass-shine: rgb(255 255 255 / 0.32);
     --studio-glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 12px 32px -10px rgb(0 0 0 / 0.22);
+}
+
+/* Automatic mode protects page text as well as cards over unknown image/moving
+ * backdrops. All values are effective display values; saved choices stay intact. */
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'] .fi-body {
+    isolation: isolate;
+}
+
+/* A light UI can still have a dark custom glass tint (and vice versa). Select
+ * the host's existing logo variant for that backing rather than the UI mode. */
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'][data-studio-glass-tone='dark'] .fi-logo-light,
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'][data-studio-glass-tone='light'] .fi-logo-dark {
+    display: none;
+}
+
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'][data-studio-glass-tone='dark'] .fi-logo-dark,
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'][data-studio-glass-tone='light'] .fi-logo-light {
+    display: flex;
+}
+
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'] .fi-body::after,
+.fi-studio-mini-canvas[data-studio-readable='auto']::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--studio-page-scrim);
+    pointer-events: none;
+}
+
+.fi-studio-mini-canvas[data-studio-readable='auto']::after {
+    position: absolute;
+    border-radius: inherit;
+}
+
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'] :is(
+    .fi-topbar, .fi-sidebar, .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn, .fi-wi-stats-overview-stat, .fi-modal-window, .fi-simple-main, .fi-dropdown-panel
+):not(.fi-studio-editor-controls, .fi-studio-editor-controls *) {
+    --studio-text-color: var(--studio-glass-text-color);
+    --studio-muted-text-color: var(--studio-glass-muted-text-color);
+}
+
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'] .fi-input-wrp:not(.fi-disabled):not(.fi-studio-editor-controls *) {
+    --studio-text-color: var(--studio-glass-input-text-color);
+    --studio-muted-text-color: var(--studio-glass-input-muted-text-color);
+}
+
+/* Keep decorative lighting below the protected tint, where it cannot wash out
+ * a foreground that was calculated against that backing. */
+html[data-studio-skin='glass'][data-studio-glass-readability='auto'] :is(
+    .fi-topbar, .fi-sidebar, .fi-section:not(.fi-section-not-contained):not(.fi-aside),
+    .fi-ta-ctn, .fi-wi-stats-overview-stat, .fi-modal-window, .fi-simple-main, .fi-dropdown-panel
+)::after {
+    z-index: -3;
 }
 
 html[data-studio-skin='glass'].dark {
@@ -418,7 +489,7 @@ html[data-studio-skin='glass'] .fi-input-wrp .fi-select-input .fi-dropdown-panel
 }
 
 html[data-studio-skin='glass'] .fi-input-wrp:not(.fi-disabled):not(.fi-invalid):not(:focus-within) {
-    box-shadow: inset 0 1px 0 0 var(--studio-glass-rim-soft), 0 0 0 1px var(--studio-glass-rim-soft);
+    box-shadow: inset 0 1px 0 0 var(--studio-glass-rim-soft), 0 0 0 1px var(--studio-border);
 }
 
 /* Active menu item and filled buttons read as small glass pills. */

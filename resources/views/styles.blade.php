@@ -7,12 +7,22 @@
     $secondaryFont = StudioTheme::secondaryFontFor();
     $backdropImage = StudioTheme::backdropImageUrl();
     $darkBackdropImage = StudioTheme::backdropImageUrl(dark: true);
+    $readabilityState = [];
+    foreach (['', 'dark_'] as $prefix) {
+        foreach (['skin', 'glass_auto_readability', 'text_color', 'muted_text_color', 'background', 'surface', 'input', 'glass_opacity', 'backdrop_intensity'] as $key) {
+            $readabilityState[$prefix.$key] = StudioTheme::value($prefix.$key);
+        }
+        $readabilityState[$prefix.'backdrop'] = StudioTheme::backdrop(dark: $prefix !== '');
+    }
 @endphp
+
+@include('filament-studio::readability')
 
 {{-- Set before first paint so the skin never flashes. --}}
 <script>
     (() => {
         const html = document.documentElement;
+        const readabilityState = @js($readabilityState);
         const looks = {
             light: { skin: @js(StudioTheme::skin()), backdrop: @js(StudioTheme::backdrop()), motion: @js(StudioTheme::isAuroraAnimated() ? 'on' : 'off'), refraction: {{ StudioTheme::range('glass_refraction') }} },
             dark: { skin: @js(StudioTheme::skin(dark: true)), backdrop: @js(StudioTheme::backdrop(dark: true)), motion: @js(StudioTheme::isAuroraAnimated(dark: true) ? 'on' : 'off'), refraction: {{ StudioTheme::range('dark_glass_refraction') }} },
@@ -23,6 +33,7 @@
             html.dataset.studioBackdrop = look.backdrop;
             html.dataset.studioMotion = look.motion;
             document.querySelector('[data-studio-lens]')?.setAttribute('scale', look.refraction);
+            window.filamentStudioReadability.apply(readabilityState, html.classList.contains('dark'));
         };
         html.dataset.studioSidebar = @js(StudioTheme::sidebarStyle());
         applyMode();

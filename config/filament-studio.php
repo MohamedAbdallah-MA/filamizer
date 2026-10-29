@@ -521,7 +521,7 @@ return [
         'text_color', 'muted_text_color', 'dark_text_color', 'dark_muted_text_color',
         'primary', 'background', 'surface', 'input', 'border',
         'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border',
-        'glass_blur', 'glass_refraction', 'glass_opacity', 'dark_glass_opacity',
+        'glass_blur', 'glass_refraction', 'glass_opacity', 'dark_glass_opacity', 'glass_auto_readability', 'dark_glass_auto_readability',
         'glow_intensity', 'dark_glow_intensity',
         'backdrop', 'backdrop_intensity', 'dark_backdrop_intensity',
         'backdrop_color_1', 'backdrop_color_2', 'backdrop_color_3',
@@ -532,8 +532,8 @@ return [
 
     // The colors and effect strengths that are set separately for each theme.
     'theme_keys' => [
-        'light' => ['text_color', 'muted_text_color', 'skin', 'backdrop', 'backdrop_image', 'glass_blur', 'glass_refraction', 'aurora_animated', 'preset', 'success', 'warning', 'danger', 'info', 'gray_palette', 'primary', 'background', 'surface', 'input', 'border', 'glass_opacity', 'glow_intensity', 'backdrop_intensity', 'backdrop_color_1', 'backdrop_color_2', 'backdrop_color_3', 'backdrop_angle', 'aurora_speed'],
-        'dark' => ['dark_text_color', 'dark_muted_text_color', 'dark_skin', 'dark_backdrop', 'dark_backdrop_image', 'dark_glass_blur', 'dark_glass_refraction', 'dark_aurora_animated', 'dark_preset', 'dark_success', 'dark_warning', 'dark_danger', 'dark_info', 'dark_gray_palette', 'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border', 'dark_glass_opacity', 'dark_glow_intensity', 'dark_backdrop_intensity', 'dark_backdrop_color_1', 'dark_backdrop_color_2', 'dark_backdrop_color_3', 'dark_backdrop_angle', 'dark_aurora_speed'],
+        'light' => ['glass_auto_readability', 'text_color', 'muted_text_color', 'skin', 'backdrop', 'backdrop_image', 'glass_blur', 'glass_refraction', 'aurora_animated', 'preset', 'success', 'warning', 'danger', 'info', 'gray_palette', 'primary', 'background', 'surface', 'input', 'border', 'glass_opacity', 'glow_intensity', 'backdrop_intensity', 'backdrop_color_1', 'backdrop_color_2', 'backdrop_color_3', 'backdrop_angle', 'aurora_speed'],
+        'dark' => ['dark_glass_auto_readability', 'dark_text_color', 'dark_muted_text_color', 'dark_skin', 'dark_backdrop', 'dark_backdrop_image', 'dark_glass_blur', 'dark_glass_refraction', 'dark_aurora_animated', 'dark_preset', 'dark_success', 'dark_warning', 'dark_danger', 'dark_info', 'dark_gray_palette', 'dark_primary', 'dark_background', 'dark_surface', 'dark_input', 'dark_border', 'dark_glass_opacity', 'dark_glow_intensity', 'dark_backdrop_intensity', 'dark_backdrop_color_1', 'dark_backdrop_color_2', 'dark_backdrop_color_3', 'dark_backdrop_angle', 'dark_aurora_speed'],
     ],
 
     'profiles' => [
@@ -596,11 +596,13 @@ return [
         'backdrop_image' => null,
         'glass_blur' => 16,
         'glass_opacity' => 45,
+        'glass_auto_readability' => true,
         'glass_refraction' => 40,
         'backdrop_intensity' => 100,
         'navigation_layout' => [],
         'dark_primary' => '#B08C50',
         'dark_glass_opacity' => 40,
+        'dark_glass_auto_readability' => true,
         'dark_backdrop_intensity' => 100,
         'dark_glow_intensity' => 60,
         'user_skins' => ['classic', 'glass', 'neon', 'soft', 'minimal'],

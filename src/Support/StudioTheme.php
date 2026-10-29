@@ -256,7 +256,7 @@ class StudioTheme
                 if (is_array($value)) {
                     $clean[$key] = array_values(array_intersect($value, array_keys(config('filament-studio.skins', []))));
                 }
-            } elseif (in_array($key, ['aurora_animated', 'dark_aurora_animated'], true)) {
+            } elseif (in_array($key, ['aurora_animated', 'dark_aurora_animated', 'glass_auto_readability', 'dark_glass_auto_readability'], true)) {
                 $boolean = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
                 if ($boolean !== null) {

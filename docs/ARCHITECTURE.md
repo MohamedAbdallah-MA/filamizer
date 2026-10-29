@@ -244,6 +244,9 @@ Profile mutations and resets check page authorization on the server, including L
   levels so select menus and color pickers stay above later fields/sections. Select
   option panels use a solid surface without refraction for readability. Color inputs
   explicitly use LTR direction so hex values keep their `#` prefix in Arabic.
+  Unfocused glass inputs keep the inner white highlight but draw their outer ring
+  using `--studio-border`, including native date inputs. Focus/invalid/disabled
+  states retain Filament's own rings.
 - **Neon**: glow from `--studio-glow` on cards, primary buttons, active nav item, focused inputs.
 - **Soft** / **Minimal**: shadows vs hairlines. **Classic**: Filament + colors.
 - **Backdrops**: gradient/mesh scale by `--studio-backdrop-strength`
@@ -271,7 +274,7 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
   optional **Starting palette** beside the main color. A starting palette initializes
   that mode's semantic, text, surface and neutral colors. Full customization reveals
   text color, secondary text color and card/sidebar tint in this same section; Glass
-  additionally shows opacity/blur/refraction, and Neon shows glow. Text controls are
+  additionally shows opacity/blur/refraction and an independent per-theme Automatic readability toggle (default on), and Neon shows glow. Text controls are
   available on My appearance and stored in profiles. Skin, backdrop, effects, palettes
   and colors have independent `dark_` keys. Users can retain an inherited global skin
   outside `user_skins`; it is removed from personal overrides rather than blocking Save.
@@ -313,7 +316,7 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
 - `live-preview.blade.php`: watches `$wire.data.studio`, writes CSS variables inline on
   `<html>` for the **mode the page is in** (approximate primary scale with `color-mix`),
   sets the data-attributes, updates the lens `scale`, loads Google Fonts on demand, and
-  computes **WCAG contrast warnings** (glass blended over background). Exact palettes
+  computes contrast diagnostics using the shared readability resolver. Manual Glass uses conservative qualitative warnings rather than a base-only ratio. Exact palettes
   arrive after save (the admin page reloads when studio values changed; My appearance always reloads).
   Diagnostics live inside a native `details` popup behind the always-present "Preview
   checks" counter. The popup is absolutely positioned: warnings must never add/remove
@@ -340,6 +343,9 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
 - `editorState()` merges a saved layout with today's catalog: removed resources dropped,
   new ones added to their default group. `apply()` clones Filament's items, sets
   sort/label/icon, drops hidden ones, regroups; unknown items keep their original group.
+  A custom item icon overrides both `icon()` and `activeIcon()` so navigation keeps
+  the selected glyph on the active page. A null override preserves the resource's
+  original inactive/active icons; the original navigation items are never mutated.
 - `sanitize()` validates ids (`/^g_[a-z0-9_-]{1,40}$/`), icons (`/^heroicon-[os]-[a-z0-9-]+$/`),
   strips tags, limits labels to 60 chars, only configured locales.
 - UI: Alpine + **SortableJS that Filament already ships** (`window.Sortable`); on drop we
@@ -347,6 +353,10 @@ Shared by the admin tab (`forUser: false`) and My appearance (`forUser: true`); 
   container is `wire:ignore`. Icon picker = one teleported dialog with all 324 outline
   Heroicons pre-rendered server-side and searchable.
 - Layout is **global only** (not per user, not in profiles) — by decision so far.
+- The host `AppServiceProvider` adds accordion behavior. It must only collapse
+  `.fi-sidebar-group.fi-collapsible` groups: non-collapsible groups have no button
+  to reopen them. Rebuilding the collapsed list also clears stale entries for
+  non-collapsible groups, even when no collapsible groups remain.
 
 ### 9.5 Per-user looks (`StudioPreferences`, `MyAppearance`)
 - `MyAppearance` extends Filament's `SettingsPage` (overrides `fillForm()`/`save()`),
@@ -461,3 +471,41 @@ current full project suite passes.
 - **Profile** — a saved bundle of values; shared (admin) or personal.
 - **Theme** — light or dark; each has its own set of `theme_keys`.
 - **Catalog** — the default sidebar items/groups Filament builds for the current user.
+
+## 15. Automatic Glass readability — 2026-10-28
+
+Automatic readability is enabled by default for Liquid Glass. Light and dark have independent manual toggles under **Full customization > Style and color** (`glass_auto_readability`, `dark_glass_auto_readability`). Stored colors, opacity and profiles remain unchanged; disabling auto restores exact selected colors and opacity. The two flags bring StudioSettings to **66 properties**; the original QA07 ledger covered the then-current **64**, not these new flags.
+
+The shared `resources/views/readability.blade.php` resolver serves saved pages, live editing and the miniature. It conservatively bounds arbitrary translucent backdrops across RGB ranges, strengthens effective card/input backing, adds a page scrim, and resolves separate body/card/input main and secondary foregrounds. It never reduces chosen opacity. Its 4.5:1 target against modeled bounds is not proof of contrast at every rendered pixel. Manual Glass diagnostics now give conservative qualitative warnings when readability is uncertain, addressing the old backdrop-warning gap. Miniature refraction remains open.
+
+The explicit `@layer properties, theme, base, components, utilities;` prelude preserves Filament/Tailwind order when Studio loads first. The earlier flush spacing/double-logo presentation was caused by this ordering issue and is resolved, not a preexisting limitation. Canonical browser verification finds 64px total main horizontal padding, 48px card content padding and one visible logo in both desktop modes; heading/placeholder hover samples also pass after the highlight settles.
+
+Current verification: **84 PHP tests / 966 assertions**, **8/8 math tests** (100 deterministic palettes per mode, independent contrast oracle, frozen-state/clone checks), and **9/9 QA14 browser checks**, zero page errors. The fresh final QA13 dark compatibility run is **15/15** after the layer/readability changes; earlier light/RTL **30** checks are historical. QA07 rendered-color and QA12 stress scripts now explicitly disable auto for raw-value assertions; they were syntax checked, not broadly rerun. Latest full PHP: **206 tests / 1,638 assertions; 198 passed, four errors and four failures**, the same eight previously recorded cases (`storage/app/studio-qa/qa14-full-php-suite.log`).
+
+The local migration added only the two default-true settings. Existing colors, opacity and profile data were preserved. `filament:assets` completed successfully and the unrelated phone-input JavaScript change was restored.
+
+Automatic Glass also selects the host's existing light/dark logo variant from the effective surface backing (`surfaceTone` / `data-studio-glass-tone`), rather than assuming the page mode determines readability. A light page with a black custom tint uses the white logo; a dark page with a white tint uses the black logo. Exactly one variant is displayed. Manual mode retains the usual page-mode logo choice. The eight math tests include backing-tone checks in both modes. Focused browser diagnostics passed **3/3**, verifying two manual warnings, no warnings with both automatic flags enabled, and one warning after disabling one flag. Branding passed **3/3**, covering both inverted mode/tint combinations and manual restoration. The warning run retained two known dashboard-login SQLite errors; branding had zero page errors. Evidence: `qa14-diagnostics-branding-review.md`, `qa14-glass-diagnostics.json`, and `qa14-glass-branding.json` under the ignored evidence directory.
+
+A read-only boot against the original MySQL database confirmed both new automatic-readability defaults are true and both original profiles remain present (count: 2).
+
+
+The additive `2026_10_28_000000_add_studio_glass_readability.php` migration adds only the two flags and does not rewrite profiles/preferences; absent keys inherit defaults. Both flags are theme keys and permitted personal settings. The shared resolver never mutates form/persisted state: effective CSS variables may differ by body, card and input role. Saved-page `.dark` changes and live mode updates use the same resolver as the miniature. Decorative highlights sit behind text; the layer prelude is required even when Studio CSS loads before Filament utilities.
+
+The original 64-property audit and earlier full-suite 204/1,618 result remain historical. Current limits include miniature refraction fidelity, browser coverage and incomplete semantic/validation/disabled-state sampling; automatic readability is not an exhaustive accessibility guarantee.
+
+Apply the additive migration to a prepared/cloned isolated `glass-review.sqlite` before serving it on port 8136; use matching published assets. Run from the repository root:
+
+```powershell
+& ./tests/E2E/environment.ps1 -Action php -Database glass-review.sqlite -PhpArguments @('artisan', 'migrate', '--path=packages/deal-art/filament-studio/database/settings/2026_10_28_000000_add_studio_glass_readability.php', '--force', '--no-interaction')
+php artisan filament:assets
+node --test tests/E2E/readability-math.test.mjs
+$env:QA_BASE_URL = 'http://127.0.0.1:8136'
+$env:PW_TEST_SCREENSHOT_NO_FONTS_READY = '1'
+node tests/E2E/qa14-glass-readability.mjs
+node tests/E2E/qa14-glass-diagnostics.mjs
+$env:QA14_BRAND_ONLY = '1'
+node tests/E2E/qa14-glass-diagnostics.mjs
+Remove-Item Env:QA14_BRAND_ONLY
+```
+
+Set `PLAYWRIGHT_MODULE_PATH` if Playwright is not installed locally. Evidence is in ignored `storage/app/studio-qa/qa14-*` and `output/playwright/studio-qa/qa14-glass-readability/`.
