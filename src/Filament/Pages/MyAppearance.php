@@ -1,12 +1,13 @@
 <?php
 
-namespace DealArt\FilamentStudio\Filament\Pages;
+namespace FilamentCustomizer\Filament\Pages;
 
-use DealArt\FilamentStudio\Concerns\ManagesStudioAppearance;
-use DealArt\FilamentStudio\Filament\StudioAppearanceEditor;
-use DealArt\FilamentStudio\Settings\StudioSettings;
-use DealArt\FilamentStudio\StudioPlugin;
-use DealArt\FilamentStudio\Support\StudioPreferences;
+use FilamentCustomizer\Concerns\ManagesStudioAppearance;
+use FilamentCustomizer\Filament\StudioAppearanceEditor;
+use FilamentCustomizer\Settings\StudioSettings;
+use FilamentCustomizer\CustomizerPlugin;
+use FilamentCustomizer\Support\StudioPreferences;
+use Filament\Facades\Filament;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
@@ -29,8 +30,9 @@ class MyAppearance extends SettingsPage
 
     public static function canAccess(): bool
     {
-        return auth()->check()
-            && StudioPlugin::get() !== null
+        return Filament::auth()->check()
+            && CustomizerPlugin::get() !== null
+            && CustomizerPlugin::get()->hasPersonalAppearance()
             && StudioPreferences::isUserCustomizationEnabled();
     }
 
@@ -71,7 +73,7 @@ class MyAppearance extends SettingsPage
 
         $data = $this->form->getState();
 
-        StudioPreferences::make()->saveForUser(auth()->id(), Arr::only($data['studio'] ?? [], StudioPreferences::userKeys()));
+        StudioPreferences::make()->saveForUser(Filament::auth()->id(), Arr::only($data['studio'] ?? [], StudioPreferences::userKeys()));
 
         $this->rememberData();
         $this->getSavedNotification()?->send();
@@ -87,7 +89,7 @@ class MyAppearance extends SettingsPage
 
     protected function studioProfileOwnerId(): int|string|null
     {
-        return auth()->id();
+        return Filament::auth()->id();
     }
 
     protected function canManageStudioAppearance(): bool

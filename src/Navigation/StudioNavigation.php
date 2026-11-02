@@ -1,6 +1,6 @@
 <?php
 
-namespace DealArt\FilamentStudio\Navigation;
+namespace FilamentCustomizer\Navigation;
 
 use BackedEnum;
 use Closure;
@@ -39,7 +39,7 @@ class StudioNavigation
      */
     public static function locales(): array
     {
-        return config('filament-studio.navigation.locales', ['en']);
+        return config('filament-customizer.navigation.locales', ['en']);
     }
 
     /**
@@ -342,7 +342,7 @@ class StudioNavigation
      */
     protected static function cleanLabels(mixed $labels): array
     {
-        $max = config('filament-studio.navigation.label_max_length', 60);
+        $max = config('filament-customizer.navigation.label_max_length', 60);
 
         return collect(static::locales())
             ->mapWithKeys(fn (string $locale) => [

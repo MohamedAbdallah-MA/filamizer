@@ -1,8 +1,7 @@
 {
-    "name": "deal-art/filament-studio",
+    "name": "filament-customizer/filament-customizer",
     "description": "Runtime dashboard customizer for Filament panels: theme presets, colors, Arabic/Latin fonts, density, radius and dark mode.",
     "type": "library",
-    "version": "0.1.0",
     "license": "proprietary",
     "keywords": ["filament", "filament-plugin", "theme", "customizer", "rtl", "arabic"],
     "require": {
@@ -14,13 +13,30 @@
     },
     "autoload": {
         "psr-4": {
-            "DealArt\\FilamentStudio\\": "src/"
+            "FilamentCustomizer\\": "src/"
         }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.5",
+        "laravel/pint": "^1.24"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FilamentCustomizer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "@php vendor/bin/phpunit",
+        "format": "@php vendor/bin/pint"
+    },
+    "archive": {
+        "exclude": ["/vendor", "/tests", "/.github", "/.phpunit.cache", "/docs/ARCHITECTURE.md", "/docs/UX-EXPERIMENT.md", "/composer.lock"]
     },
     "extra": {
         "laravel": {
             "providers": [
-                "DealArt\\FilamentStudio\\FilamentStudioServiceProvider"
+                "FilamentCustomizer\\FilamentCustomizerServiceProvider"
             ]
         }
     },

@@ -1,8 +1,8 @@
 <?php
 
-namespace DealArt\FilamentStudio\Filament\Components;
+namespace FilamentCustomizer\Filament\Components;
 
-use DealArt\FilamentStudio\Navigation\StudioNavigation;
+use FilamentCustomizer\Navigation\StudioNavigation;
 use Filament\Forms\Components\Field;
 use Filament\Support\Icons\Heroicon;
 
@@ -13,7 +13,7 @@ use function Filament\Support\generate_icon_html;
  */
 class NavigationLayoutEditor extends Field
 {
-    protected string $view = 'filament-studio::navigation-editor';
+    protected string $view = 'filament-customizer::navigation-editor';
 
     protected ?array $catalog = null;
 

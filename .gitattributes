@@ -1,0 +1,8 @@
+* text=auto
+/docs/ARCHITECTURE.md export-ignore
+/docs/UX-EXPERIMENT.md export-ignore
+/tests export-ignore
+/.github export-ignore
+/phpunit.xml.dist export-ignore
+/.gitignore export-ignore
+/composer.lock export-ignore

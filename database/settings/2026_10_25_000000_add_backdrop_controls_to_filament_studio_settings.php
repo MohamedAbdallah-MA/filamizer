@@ -21,7 +21,7 @@ return new class extends SettingsMigration
         ];
 
         foreach ($this->keys as $key) {
-            $value = config("filament-studio.defaults.{$key}");
+            $value = config("filament-customizer.defaults.{$key}");
 
             if (isset($sources[$key])) {
                 $stored = json_decode((string) DB::table('settings')->where('group', 'studio')->where('name', $sources[$key])->value('payload'), true);

@@ -1,5 +1,5 @@
 @php
-    use DealArt\FilamentStudio\Support\StudioTheme;
+    use FilamentCustomizer\Support\StudioTheme;
 
     /*
      * Displacement map for the lens: red drives horizontal shift, green vertical,

@@ -1,10 +1,10 @@
 <?php
 
-namespace DealArt\FilamentStudio\Navigation;
+namespace FilamentCustomizer\Navigation;
 
 use Closure;
-use DealArt\FilamentStudio\StudioPlugin;
-use DealArt\FilamentStudio\Support\StudioTheme;
+use FilamentCustomizer\CustomizerPlugin;
+use FilamentCustomizer\Support\StudioTheme;
 use Filament\Navigation\NavigationManager;
 
 /**
@@ -19,7 +19,7 @@ class StudioNavigationManager extends NavigationManager
     {
         $navigation = parent::get();
 
-        if ($this->isLayoutDisabled || ! StudioPlugin::get()) {
+        if ($this->isLayoutDisabled || ! CustomizerPlugin::get()) {
             return $navigation;
         }
 

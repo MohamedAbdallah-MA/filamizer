@@ -1,6 +1,6 @@
 <?php
 
-namespace DealArt\FilamentStudio\Support;
+namespace FilamentCustomizer\Support;
 
 use Filament\Support\Assets\Css;
 

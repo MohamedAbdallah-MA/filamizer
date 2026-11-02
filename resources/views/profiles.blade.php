@@ -23,11 +23,11 @@
                         </span>
                         <span class="fi-studio-profile-palette-groups">
                             @foreach (['' => __('Light'), 'dark_' => __('Dark')] as $prefix => $label)
-                                <span class="fi-studio-profile-palette" title="{{ __(config('filament-studio.skins.'.($data[$prefix.'skin'] ?? $data['skin'] ?? 'classic'), 'Classic')) }}">
+                                <span class="fi-studio-profile-palette" title="{{ __(config('filament-customizer.skins.'.($data[$prefix.'skin'] ?? $data['skin'] ?? 'classic'), 'Classic')) }}">
                                     <span class="fi-studio-profile-meta">{{ $label }}</span>
                                     <span class="fi-studio-profile-swatches" aria-hidden="true">
                                         @foreach ([$data[$prefix.'primary'] ?? null, $data[$prefix.'background'] ?? null] as $color)
-                                            @if (\DealArt\FilamentStudio\Support\StudioTheme::isHex($color))
+                                            @if (\FilamentCustomizer\Support\StudioTheme::isHex($color))
                                                 <span class="fi-studio-profile-swatch" style="background-color: {{ $color }}"></span>
                                             @endif
                                         @endforeach

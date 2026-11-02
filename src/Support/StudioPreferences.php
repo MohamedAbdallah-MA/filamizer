@@ -1,9 +1,10 @@
 <?php
 
-namespace DealArt\FilamentStudio\Support;
+namespace FilamentCustomizer\Support;
 
-use DealArt\FilamentStudio\Models\StudioUserPreference;
-use DealArt\FilamentStudio\Settings\StudioSettings;
+use FilamentCustomizer\Models\StudioUserPreference;
+use FilamentCustomizer\Settings\StudioSettings;
+use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
 
 /**
@@ -55,7 +56,7 @@ class StudioPreferences
      */
     public function userOverrides(): array
     {
-        $userId = rescue(fn () => auth()->id(), null, false);
+        $userId = rescue(fn () => Filament::auth()->id(), null, false);
 
         if ($this->overrides !== null && $this->overridesFor === $userId) {
             return $this->overrides;
@@ -103,7 +104,7 @@ class StudioPreferences
      */
     public static function userKeys(): array
     {
-        return config('filament-studio.user_keys', []);
+        return config('filament-customizer.user_keys', []);
     }
 
     /**
@@ -113,7 +114,7 @@ class StudioPreferences
     {
         $skins = rescue(fn () => app(StudioSettings::class)->user_skins, null, false) ?? StudioTheme::default('user_skins') ?? [];
 
-        return array_values(array_intersect($skins, array_keys(config('filament-studio.skins', []))));
+        return array_values(array_intersect($skins, array_keys(config('filament-customizer.skins', []))));
     }
 
     public static function isUserCustomizationEnabled(): bool

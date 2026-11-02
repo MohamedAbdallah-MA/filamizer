@@ -2,7 +2,7 @@
 @layer properties, theme, base, components, utilities;
 
 /*
- * Filament Studio skins.
+ * Filament Customizer skins.
  *
  * Every rule is scoped under an attribute on <html>, set by the plugin:
  *   data-studio-skin     classic | glass | neon | soft | minimal
@@ -1254,7 +1254,7 @@ html[data-studio-skin] .fi-studio-editor-controls .fi-input-wrp:not(.fi-disabled
 }
 
 .fi-studio-backdrop-presets label[for$='-gold']::before {
-    background: linear-gradient(135deg, #b08c50, #f1d9bd);
+    background: linear-gradient(135deg, #4f46e5, #f1d9bd);
 }
 
 .fi-studio-mini {

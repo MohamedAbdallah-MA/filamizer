@@ -1,6 +1,6 @@
 <?php
 
-namespace DealArt\FilamentStudio\Settings;
+namespace FilamentCustomizer\Settings;
 
 use Spatie\LaravelSettings\Settings;
 
@@ -161,6 +161,6 @@ class StudioSettings extends Settings
      */
     public static function fields(): array
     {
-        return array_keys(config('filament-studio.defaults', []));
+        return array_keys(config('filament-customizer.defaults', []));
     }
 }

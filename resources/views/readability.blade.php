@@ -62,11 +62,11 @@
         const resolve = (state = {}, dark = false) => {
             const prefix = dark ? 'dark_' : '';
             const get = (key) => state[prefix + key];
-            const surface = hex(get('surface'), dark ? '#1A1612' : '#FFFFFF');
+            const surface = hex(get('surface'), dark ? '#111827' : '#FFFFFF');
             const input = hex(get('input'), surface);
-            const background = hex(get('background'), dark ? '#0C0C0C' : '#FAFAF9');
-            const text = hex(get('text_color'), dark ? '#FFFFFF' : '#0C0C0C');
-            const muted = hex(get('muted_text_color'), dark ? '#B0AB9E' : '#8A8478');
+            const background = hex(get('background'), dark ? '#030712' : '#F9FAFB');
+            const text = hex(get('text_color'), dark ? '#FFFFFF' : '#030712');
+            const muted = hex(get('muted_text_color'), dark ? '#9CA3AF' : '#6B7280');
             const opacityValue = Number(get('glass_opacity') ?? (dark ? 40 : 45));
             const opacity = Number.isFinite(opacityValue) ? Math.max(15, Math.min(90, opacityValue)) : 45;
             const isGlass = get('skin') === 'glass';

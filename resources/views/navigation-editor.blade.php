@@ -1,5 +1,5 @@
 @php
-    use DealArt\FilamentStudio\Navigation\StudioNavigation;
+    use FilamentCustomizer\Navigation\StudioNavigation;
 
     $statePath = $getStatePath();
     $catalog = $getCatalog();
@@ -266,7 +266,7 @@
 
             <div class="fi-studio-nav-items" data-group="{{ StudioNavigation::UNGROUPED }}" x-init="makeItemsSortable($el)">
                 <template x-for="item in itemsOf(ungrouped)" :key="item.key">
-                    @include('filament-studio::navigation-editor-item')
+                    @include('filament-customizer::navigation-editor-item')
                 </template>
 
                 <p class="fi-studio-nav-empty" x-show="! itemsOf(ungrouped).length" x-text="strings.emptyGroup"></p>
@@ -308,7 +308,7 @@
 
                     <div class="fi-studio-nav-items" :data-group="group.id" x-init="makeItemsSortable($el)">
                         <template x-for="item in itemsOf(group.id)" :key="item.key">
-                            @include('filament-studio::navigation-editor-item')
+                            @include('filament-customizer::navigation-editor-item')
                         </template>
 
                         <p class="fi-studio-nav-empty" x-show="! itemsOf(group.id).length" x-text="strings.emptyGroup"></p>

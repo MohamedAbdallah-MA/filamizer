@@ -1,11 +1,11 @@
 <?php
 
-namespace DealArt\FilamentStudio\Concerns;
+namespace FilamentCustomizer\Concerns;
 
-use DealArt\FilamentStudio\Settings\StudioSettings;
-use DealArt\FilamentStudio\StudioPlugin;
-use DealArt\FilamentStudio\Support\StudioPreferences;
-use DealArt\FilamentStudio\Support\StudioTheme;
+use FilamentCustomizer\Settings\StudioSettings;
+use FilamentCustomizer\CustomizerPlugin;
+use FilamentCustomizer\Support\StudioPreferences;
+use FilamentCustomizer\Support\StudioTheme;
 use Illuminate\Support\Arr;
 
 /**
@@ -83,11 +83,11 @@ trait InteractsWithStudioSettings
 
     protected function canManageStudioAppearance(): bool
     {
-        return StudioPlugin::get()?->userCanCustomize() ?? false;
+        return CustomizerPlugin::get()?->userCanCustomize() ?? false;
     }
 
     protected function studioResetValues(): array
     {
-        return Arr::only(config('filament-studio.defaults', []), $this->studioEditableKeys());
+        return Arr::only(config('filament-customizer.defaults', []), $this->studioEditableKeys());
     }
 }

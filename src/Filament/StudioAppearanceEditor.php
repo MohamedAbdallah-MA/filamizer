@@ -1,9 +1,9 @@
 <?php
 
-namespace DealArt\FilamentStudio\Filament;
+namespace FilamentCustomizer\Filament;
 
-use DealArt\FilamentStudio\Support\StudioPreferences;
-use DealArt\FilamentStudio\Support\StudioTheme;
+use FilamentCustomizer\Support\StudioPreferences;
+use FilamentCustomizer\Support\StudioTheme;
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\ColorPicker;
@@ -41,14 +41,14 @@ class StudioAppearanceEditor
     public static function components(bool $forUser = false): array
     {
         return [
-            View::make('filament-studio::live-preview')->columnSpanFull(),
+            View::make('filament-customizer::live-preview')->columnSpanFull(),
 
             Section::make(__('Profiles'))
                 ->description(__('Your saved looks, including both light and dark modes. Apply one, then save when ready.'))
                 ->extraAttributes(['class' => 'fi-studio-profile-section fi-studio-editor-controls'])
                 ->headerActions([static::saveProfileAction()])
                 ->schema([
-                    View::make('filament-studio::profiles')
+                    View::make('filament-customizer::profiles')
                         ->viewData(fn ($livewire) => [
                             'profiles' => $livewire->getStudioProfiles(),
                             'canDelete' => fn ($profile) => $livewire->canDeleteStudioProfile($profile),
@@ -90,7 +90,7 @@ class StudioAppearanceEditor
                             ->dehydratedWhenHidden(),
                         static::toolbar(),
                     ])->columnSpan(['lg' => 3])->extraAttributes(['class' => 'fi-studio-editor-controls']),
-                    View::make('filament-studio::mini-preview')
+                    View::make('filament-customizer::mini-preview')
                         ->viewData(['forUser' => $forUser])
                         ->columnSpan(['lg' => 2]),
                 ]),
@@ -186,7 +186,7 @@ class StudioAppearanceEditor
                     $to = $from === 'light' ? 'dark' : 'light';
 
                     // Keep surface colors independent when copying the rest of the look.
-                    foreach (config("filament-studio.theme_keys.{$from}") as $key) {
+                    foreach (config("filament-customizer.theme_keys.{$from}") as $key) {
                         if (! str_ends_with($key, 'background') && ! str_ends_with($key, 'surface') && ! str_ends_with($key, 'input') && ! str_ends_with($key, 'border')) {
                             $base = str_starts_with($key, 'dark_') ? substr($key, 5) : $key;
                             $set($to === 'dark' ? "dark_{$base}" : $base, $get($key));
@@ -219,7 +219,7 @@ class StudioAppearanceEditor
                 TextInput::make('name')
                     ->label(__('Profile name'))
                     ->placeholder(__('Night shift'))
-                    ->maxLength(config('filament-studio.profiles.name_max_length', 40))
+                    ->maxLength(config('filament-customizer.profiles.name_max_length', 40))
                     ->required(),
             ])
             ->modalSubmitActionLabel(__('Save profile'))
@@ -237,10 +237,10 @@ class StudioAppearanceEditor
                 ->helperText(__('Optional. Replaces colors in this mode only.'))
                 ->placeholder(__('Choose a palette'))
                 ->options(static::translatedOptions('themes'))
-                ->in(array_keys(config('filament-studio.themes', [])))
+                ->in(array_keys(config('filament-customizer.themes', [])))
                 ->live()
                 ->afterStateUpdated(function (?string $state, Set $set) use ($key): void {
-                    $theme = config("filament-studio.themes.{$state}");
+                    $theme = config("filament-customizer.themes.{$state}");
 
                     if (! $theme) {
                         return;
@@ -270,7 +270,7 @@ class StudioAppearanceEditor
                 ToggleButtons::make('font_size')
                     ->label(__('Text size'))
                     ->options(['sm' => __('Small'), 'md' => __('Standard'), 'lg' => __('Large'), 'xl' => __('Extra large')])
-                    ->in(array_keys(config('filament-studio.font_sizes', [])))
+                    ->in(array_keys(config('filament-customizer.font_sizes', [])))
                     ->inline()->dehydratedWhenHidden()->required(),
                 ...($forUser ? [] : [
                     Grid::make(2)
@@ -279,29 +279,29 @@ class StudioAppearanceEditor
                         ->schema([
                             Select::make('font_arabic')
                                 ->label(__('Arabic Font'))
-                                ->options(config('filament-studio.fonts.arabic', []))
-                                ->in(array_keys(config('filament-studio.fonts.arabic', [])))
+                                ->options(config('filament-customizer.fonts.arabic', []))
+                                ->in(array_keys(config('filament-customizer.fonts.arabic', [])))
                                 ->searchable()->dehydratedWhenHidden()->required(),
                             Select::make('font_latin')
                                 ->label(__('English Font'))
-                                ->options(config('filament-studio.fonts.latin', []))
-                                ->in(array_keys(config('filament-studio.fonts.latin', [])))
+                                ->options(config('filament-customizer.fonts.latin', []))
+                                ->in(array_keys(config('filament-customizer.fonts.latin', [])))
                                 ->searchable()->dehydratedWhenHidden()->required(),
                             Select::make('density')
                                 ->label(__('Density'))
                                 ->options(static::translatedOptions('densities'))
-                                ->in(array_keys(config('filament-studio.densities', [])))
+                                ->in(array_keys(config('filament-customizer.densities', [])))
                                 ->dehydratedWhenHidden()->required(),
                             Select::make('radius')
                                 ->label(__('Corner Radius'))
                                 ->options(static::translatedOptions('radii'))
-                                ->in(array_keys(config('filament-studio.radii', [])))
+                                ->in(array_keys(config('filament-customizer.radii', [])))
                                 ->dehydratedWhenHidden()->required(),
                             ToggleButtons::make('sidebar_style')
                                 ->label(__('Sidebar Style'))
                                 ->helperText(__('"Collapsible to icons" takes effect after saving.'))
                                 ->options(static::translatedOptions('sidebar_styles'))
-                                ->in(array_keys(config('filament-studio.sidebar_styles', [])))
+                                ->in(array_keys(config('filament-customizer.sidebar_styles', [])))
                                 ->inline()->dehydratedWhenHidden()->required()
                                 ->columnSpanFull(),
                         ]),
@@ -325,7 +325,7 @@ class StudioAppearanceEditor
                         ->options(static::translatedOptions('neutral_palettes'))
                         ->live()
                         ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
-                            if ($shades = config("filament-studio.neutral_palettes.{$state}.shades")) {
+                            if ($shades = config("filament-customizer.neutral_palettes.{$state}.shades")) {
                                 static::setGrayPalette($set, $shades, ($get('edit_mode') ?? 'light') === 'dark' ? 'dark_' : '');
                             }
                         })
@@ -342,19 +342,19 @@ class StudioAppearanceEditor
                     Select::make('dark_mode')
                         ->label(__('Dark Mode'))
                         ->options(static::translatedOptions('dark_modes'))
-                        ->in(array_keys(config('filament-studio.dark_modes', [])))
+                        ->in(array_keys(config('filament-customizer.dark_modes', [])))
                         ->live()->dehydratedWhenHidden()->required(),
                     Select::make('default_theme_mode')
                         ->label(__('Default Mode'))
                         ->helperText(__('Used until a user picks a mode themselves.'))
                         ->options(static::translatedOptions('default_theme_modes'))
-                        ->in(array_keys(config('filament-studio.default_theme_modes', [])))
+                        ->in(array_keys(config('filament-customizer.default_theme_modes', [])))
                         ->dehydratedWhenHidden()->required(),
                     CheckboxList::make('user_skins')
                         ->label(__('Skins users can pick for themselves'))
                         ->helperText(__('Leave all unchecked to turn off "My appearance" for users.'))
                         ->options(static::translatedOptions('skins'))
-                        ->in(array_keys(config('filament-studio.skins', [])))
+                        ->in(array_keys(config('filament-customizer.skins', [])))
                         ->columns(5)
                         ->dehydratedWhenHidden()
                         ->columnSpanFull(),
@@ -434,7 +434,7 @@ class StudioAppearanceEditor
                     ->extraAttributes(['class' => 'fi-studio-backdrop-presets'])
                     ->visible(fn (Get $get) => in_array(static::editingValue($get, 'backdrop'), ['gradient', 'mesh', 'aurora'], true))
                     ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
-                        $colors = config("filament-studio.backdrop_palettes.{$state}.colors");
+                        $colors = config("filament-customizer.backdrop_palettes.{$state}.colors");
 
                         if (! is_array($colors)) {
                             return;
@@ -466,8 +466,8 @@ class StudioAppearanceEditor
                         ->label(__('Backdrop Image'))
                         ->helperText(__('Shown after saving. Large, soft images work best.'))
                         ->image()
-                        ->disk(config('filament-studio.backdrop_disk'))
-                        ->directory(config('filament-studio.backdrop_directory'))
+                        ->disk(config('filament-customizer.backdrop_disk'))
+                        ->directory(config('filament-customizer.backdrop_directory'))
                         ->visibility('public')
                         ->maxSize(4096)
                         ->required(fn (Get $get): bool => $get($key === 'dark_backdrop_image' ? 'dark_backdrop' : 'backdrop') === 'image')
@@ -516,7 +516,7 @@ class StudioAppearanceEditor
 
     protected static function slider(string $key, string $label): Slider
     {
-        [$min, $max] = config("filament-studio.ranges.{$key}");
+        [$min, $max] = config("filament-customizer.ranges.{$key}");
 
         return Slider::make($key)
             ->label($label)
@@ -534,7 +534,7 @@ class StudioAppearanceEditor
      */
     public static function translatedOptions(string $configList): array
     {
-        return collect(config("filament-studio.{$configList}", []))
+        return collect(config("filament-customizer.{$configList}", []))
             ->map(fn (array|string $item) => __(is_array($item) ? $item['label'] : $item))
             ->all();
     }

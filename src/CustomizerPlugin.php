@@ -1,19 +1,24 @@
 <?php
 
-namespace DealArt\FilamentStudio;
+namespace FilamentCustomizer;
 
 use Closure;
-use DealArt\FilamentStudio\Filament\Pages\MyAppearance;
-use DealArt\FilamentStudio\Support\StudioTheme;
+use FilamentCustomizer\Filament\Pages\ManageAppearance;
+use FilamentCustomizer\Filament\Pages\MyAppearance;
+use FilamentCustomizer\Support\StudioTheme;
 use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
 use Filament\FontProviders\GoogleFontProvider;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 
-class StudioPlugin implements Plugin
+class CustomizerPlugin implements Plugin
 {
     protected ?Closure $canCustomize = null;
+
+    protected bool $hasSettingsPage = true;
+
+    protected bool $hasPersonalAppearance = true;
 
     public static function make(): static
     {
@@ -24,12 +29,12 @@ class StudioPlugin implements Plugin
     {
         $panel = filament()->getCurrentOrDefaultPanel();
 
-        return $panel?->hasPlugin('filament-studio') ? $panel->getPlugin('filament-studio') : null;
+        return $panel?->hasPlugin('filament-customizer') ? $panel->getPlugin('filament-customizer') : null;
     }
 
     public function getId(): string
     {
-        return 'filament-studio';
+        return 'filament-customizer';
     }
 
     /**
@@ -44,7 +49,31 @@ class StudioPlugin implements Plugin
 
     public function userCanCustomize(): bool
     {
-        return $this->canCustomize ? (bool) app()->call($this->canCustomize) : true;
+        return $this->canCustomize ? (bool) app()->call($this->canCustomize) : false;
+    }
+
+    public function settingsPage(bool $condition = true): static
+    {
+        $this->hasSettingsPage = $condition;
+
+        return $this;
+    }
+
+    public function hasSettingsPage(): bool
+    {
+        return $this->hasSettingsPage;
+    }
+
+    public function personalAppearance(bool $condition = true): static
+    {
+        $this->hasPersonalAppearance = $condition;
+
+        return $this;
+    }
+
+    public function hasPersonalAppearance(): bool
+    {
+        return $this->hasPersonalAppearance;
     }
 
     public function register(Panel $panel): void
@@ -68,20 +97,23 @@ class StudioPlugin implements Plugin
             ->sidebarCollapsibleOnDesktop(fn (): bool => StudioTheme::isSidebarCollapsible())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn () => view('filament-studio::styles'),
+                fn () => view('filament-customizer::styles'),
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                fn () => view('filament-studio::liquid-glass'),
+                fn () => view('filament-customizer::liquid-glass'),
             )
-            ->pages([MyAppearance::class])
-            ->userMenuItems([
+            ->pages([
+                ...($this->hasSettingsPage() ? [ManageAppearance::class] : []),
+                ...($this->hasPersonalAppearance() ? [MyAppearance::class] : []),
+            ])
+            ->userMenuItems($this->hasPersonalAppearance() ? [
                 'studio-appearance' => Action::make('studio-appearance')
                     ->label(fn (): string => __('My appearance'))
                     ->icon('heroicon-o-swatch')
                     ->url(fn (): string => MyAppearance::getUrl())
                     ->visible(fn (): bool => MyAppearance::canAccess()),
-            ]);
+            ] : []);
     }
 
     public function boot(Panel $panel): void

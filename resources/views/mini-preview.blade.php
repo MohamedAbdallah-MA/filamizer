@@ -1,8 +1,8 @@
 @php
     $statePath = $getStatePath();
     $isRtl = __('filament-panels::layout.direction') === 'rtl';
-    $imageUrl = \DealArt\FilamentStudio\Support\StudioTheme::backdropImageUrl();
-    $darkImageUrl = \DealArt\FilamentStudio\Support\StudioTheme::backdropImageUrl(dark: true);
+    $imageUrl = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl();
+    $darkImageUrl = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl(dark: true);
 @endphp
 
 {{-- A small dashboard drawn with the theme being edited (light or dark), whatever mode the page is in. --}}
@@ -10,7 +10,7 @@
 <div
     x-data="{
         state: {},
-        images: { light: @js($imageUrl ? \DealArt\FilamentStudio\Support\StudioTheme::cssUrl($imageUrl) : 'none'), dark: @js($darkImageUrl ? \DealArt\FilamentStudio\Support\StudioTheme::cssUrl($darkImageUrl) : 'none') },
+        images: { light: @js($imageUrl ? \FilamentCustomizer\Support\StudioTheme::cssUrl($imageUrl) : 'none'), dark: @js($darkImageUrl ? \FilamentCustomizer\Support\StudioTheme::cssUrl($darkImageUrl) : 'none') },
         get imageCss() { return this.images[this.dark ? 'dark' : 'light'] },
         init() {
             this.state = $wire.get('{{ $statePath }}') ?? {}
@@ -20,11 +20,11 @@
         pick(key) { return this.state[(this.dark ? 'dark_' : '') + key] },
         hex(value, fallback) { return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value ?? '') ? value : fallback },
         get skin() { return this.pick('skin') ?? 'classic' },
-        get primary() { return this.hex(this.pick('primary'), '#B08C50') },
-        get background() { return this.hex(this.pick('background'), this.dark ? '#0C0C0C' : '#FAFAF9') },
-        get surface() { return this.hex(this.pick('surface'), this.dark ? '#1A1612' : '#FFFFFF') },
+        get primary() { return this.hex(this.pick('primary'), '#4F46E5') },
+        get background() { return this.hex(this.pick('background'), this.dark ? '#030712' : '#F9FAFB') },
+        get surface() { return this.hex(this.pick('surface'), this.dark ? '#111827' : '#FFFFFF') },
         get input() { return this.hex(this.pick('input'), this.surface) },
-        get border() { return this.hex(this.pick('border'), this.dark ? '#342F29' : '#E8E5DF') },
+        get border() { return this.hex(this.pick('border'), this.dark ? '#1F2937' : '#E5E7EB') },
         get readability() { return window.filamentStudioReadability.resolve(this.state, this.dark) },
         get text() { return this.readability.surfaceText },
         get muted() { return this.readability.surfaceMuted },
@@ -37,8 +37,8 @@
                 '--studio-backdrop-strength': strength,
                 '--studio-backdrop-intensity': Number(this.pick('backdrop_intensity') ?? 100) / 100,
                 '--studio-backdrop-color-1': this.hex(this.pick('backdrop_color_1'), this.primary),
-                '--studio-backdrop-color-2': this.hex(this.pick('backdrop_color_2'), '#1A4A7C'),
-                '--studio-backdrop-color-3': this.hex(this.pick('backdrop_color_3'), '#1E6B3C'),
+                '--studio-backdrop-color-2': this.hex(this.pick('backdrop_color_2'), '#2563EB'),
+                '--studio-backdrop-color-3': this.hex(this.pick('backdrop_color_3'), '#15803D'),
                 '--studio-backdrop-angle': `${Number(this.pick('backdrop_angle') ?? 135)}deg`,
                 '--studio-aurora-duration': `${Number(this.pick('aurora_speed') ?? 14)}s`,
                 '--studio-backdrop-image': this.imageCss,

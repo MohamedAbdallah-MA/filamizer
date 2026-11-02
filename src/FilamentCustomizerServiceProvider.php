@@ -1,20 +1,20 @@
 <?php
 
-namespace DealArt\FilamentStudio;
+namespace FilamentCustomizer;
 
-use DealArt\FilamentStudio\Commands\InstallCommand;
-use DealArt\FilamentStudio\Navigation\StudioNavigationManager;
-use DealArt\FilamentStudio\Settings\StudioSettings;
+use FilamentCustomizer\Commands\InstallCommand;
+use FilamentCustomizer\Navigation\StudioNavigationManager;
+use FilamentCustomizer\Settings\StudioSettings;
 use Filament\Navigation\NavigationManager;
-use DealArt\FilamentStudio\Support\StudioCss;
-use DealArt\FilamentStudio\Support\StudioPreferences;
+use FilamentCustomizer\Support\StudioCss;
+use FilamentCustomizer\Support\StudioPreferences;
 use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FilamentStudioServiceProvider extends PackageServiceProvider
+class FilamentCustomizerServiceProvider extends PackageServiceProvider
 {
-    public static string $name = 'filament-studio';
+    public static string $name = 'filament-customizer';
 
     public function configurePackage(Package $package): void
     {
@@ -41,7 +41,7 @@ class FilamentStudioServiceProvider extends PackageServiceProvider
         $this->app->scoped(NavigationManager::class, fn (): NavigationManager => new StudioNavigationManager);
 
         FilamentAsset::register([
-            StudioCss::make('filament-studio', __DIR__.'/../resources/dist/filament-studio.css'),
-        ], package: 'deal-art/filament-studio');
+            StudioCss::make('filament-customizer', __DIR__.'/../resources/dist/filament-customizer.css'),
+        ], package: 'filament-customizer/filament-customizer');
     }
 }

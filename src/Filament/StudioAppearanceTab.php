@@ -1,8 +1,8 @@
 <?php
 
-namespace DealArt\FilamentStudio\Filament;
+namespace FilamentCustomizer\Filament;
 
-use DealArt\FilamentStudio\StudioPlugin;
+use FilamentCustomizer\CustomizerPlugin;
 use Filament\Schemas\Components\Tabs\Tab;
 
 /**
@@ -15,7 +15,7 @@ class StudioAppearanceTab
         return Tab::make(__('Dashboard Appearance & Design System'))
             ->icon('heroicon-o-swatch')
             ->statePath('studio')
-            ->visible(fn (): bool => StudioPlugin::get()?->userCanCustomize() ?? false)
+            ->visible(fn (): bool => CustomizerPlugin::get()?->userCanCustomize() ?? false)
             ->schema(StudioAppearanceEditor::components(forUser: false));
     }
 }

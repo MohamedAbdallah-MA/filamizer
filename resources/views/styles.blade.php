@@ -1,5 +1,5 @@
 @php
-    use DealArt\FilamentStudio\Support\StudioTheme;
+    use FilamentCustomizer\Support\StudioTheme;
 
     $light = StudioTheme::surfaces();
     $dark = StudioTheme::surfaces(dark: true);
@@ -16,7 +16,7 @@
     }
 @endphp
 
-@include('filament-studio::readability')
+@include('filament-customizer::readability')
 
 {{-- Set before first paint so the skin never flashes. --}}
 <script>
@@ -46,7 +46,7 @@
     <link href="{{ StudioTheme::googleFontsUrl($secondaryFont) }}" rel="stylesheet" data-studio-font="{{ $secondaryFont }}" />
 @endif
 
-<style id="filament-studio-styles">
+<style id="filament-customizer-styles">
     :root {
         --studio-text-color: {{ StudioTheme::color('text_color') }};
         --studio-muted-text-color: {{ StudioTheme::color('muted_text_color') }};
