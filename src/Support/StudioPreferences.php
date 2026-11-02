@@ -1,9 +1,9 @@
 <?php
 
-namespace FilamentCustomizer\Support;
+namespace Filamizer\Support;
 
-use FilamentCustomizer\Models\StudioUserPreference;
-use FilamentCustomizer\Settings\StudioSettings;
+use Filamizer\Models\StudioUserPreference;
+use Filamizer\Settings\StudioSettings;
 use Filament\Facades\Filament;
 use Illuminate\Support\Arr;
 
@@ -104,7 +104,7 @@ class StudioPreferences
      */
     public static function userKeys(): array
     {
-        return config('filament-customizer.user_keys', []);
+        return config('filamizer.user_keys', []);
     }
 
     /**
@@ -114,7 +114,7 @@ class StudioPreferences
     {
         $skins = rescue(fn () => app(StudioSettings::class)->user_skins, null, false) ?? StudioTheme::default('user_skins') ?? [];
 
-        return array_values(array_intersect($skins, array_keys(config('filament-customizer.skins', []))));
+        return array_values(array_intersect($skins, array_keys(config('filamizer.skins', []))));
     }
 
     public static function isUserCustomizationEnabled(): bool

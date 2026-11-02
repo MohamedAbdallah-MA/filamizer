@@ -1,12 +1,12 @@
-# Uploading Filament Customizer
+# Uploading Filamizer
 
 This folder is the package repository root. It contains source, tests and CI;
 the consuming Laravel application is separate. Nothing has been published yet.
 
 ## 1. Prepare the identity and release
 
-The working Composer name is `filament-customizer/filament-customizer`, with
-`FilamentCustomizer\CustomizerPlugin` as the plugin class. Composer requires a
+The working Composer name is `mohamedabdallah-ma/filamizer`, with
+`Filamizer\FilamizerPlugin` as the plugin class. Composer requires a
 vendor/package name. Check that you own the chosen vendor before publishing;
 change `composer.json`, the asset package ID in the service provider, the asset
 publication test and documentation together if you choose another vendor.
@@ -31,20 +31,20 @@ This folder already contains a Git repository with the package's extracted
 development history and a standalone-conversion commit on `main`. Do not
 reinitialize it or replace that history with a new initial commit.
 
-Create an empty GitHub repository named `filament-customizer` without generating
-a README, license or gitignore there. Start private while preparing the release.
-Run these commands from this folder, replacing the URL:
+The GitHub repository has been renamed to `MohamedAbdallah-MA/filamizer`.
+The local origin points to that repository. Run these commands from this folder
+using your authenticated Git client:
 
 ```sh
 git status
 git log --oneline
-git remote add origin https://github.com/YOUR-ACCOUNT/filament-customizer.git
+git remote set-url origin git@github.com:MohamedAbdallah-MA/filamizer.git
 git push -u origin main
 ```
 
 Review the history before making the repository public: earlier revisions retain
 their original package identity and documentation. The current revision uses
-Filament Customizer branding. Keep `composer.json` at repository root. Do not
+Filamizer branding. Keep `composer.json` at repository root. Do not
 upload the surrounding web projects directory. The GitHub Actions
 workflow will run when pushed. Review its results before tagging a release.
 
@@ -57,7 +57,7 @@ git push origin v0.1.0-beta.1
 
 Composer derives release versions from Git tags; do not add a hard-coded version
 to the package's `composer.json`. A beta tag requires consumers to opt into beta
-stability, for example `composer require filament-customizer/filament-customizer:^0.1@beta`.
+stability, for example `composer require mohamedabdallah-ma/filamizer:^0.1@beta`.
 
 ## 3. Make the package installable
 

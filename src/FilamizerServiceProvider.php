@@ -1,20 +1,20 @@
 <?php
 
-namespace FilamentCustomizer;
+namespace Filamizer;
 
-use FilamentCustomizer\Commands\InstallCommand;
-use FilamentCustomizer\Navigation\StudioNavigationManager;
-use FilamentCustomizer\Settings\StudioSettings;
+use Filamizer\Commands\InstallCommand;
+use Filamizer\Navigation\StudioNavigationManager;
+use Filamizer\Settings\StudioSettings;
 use Filament\Navigation\NavigationManager;
-use FilamentCustomizer\Support\StudioCss;
-use FilamentCustomizer\Support\StudioPreferences;
+use Filamizer\Support\StudioCss;
+use Filamizer\Support\StudioPreferences;
 use Filament\Support\Facades\FilamentAsset;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FilamentCustomizerServiceProvider extends PackageServiceProvider
+class FilamizerServiceProvider extends PackageServiceProvider
 {
-    public static string $name = 'filament-customizer';
+    public static string $name = 'filamizer';
 
     public function configurePackage(Package $package): void
     {
@@ -41,7 +41,7 @@ class FilamentCustomizerServiceProvider extends PackageServiceProvider
         $this->app->scoped(NavigationManager::class, fn (): NavigationManager => new StudioNavigationManager);
 
         FilamentAsset::register([
-            StudioCss::make('filament-customizer', __DIR__.'/../resources/dist/filament-customizer.css'),
-        ], package: 'filament-customizer/filament-customizer');
+            StudioCss::make('filamizer', __DIR__.'/../resources/dist/filamizer.css'),
+        ], package: 'mohamedabdallah-ma/filamizer');
     }
 }

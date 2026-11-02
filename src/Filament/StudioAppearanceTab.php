@@ -1,8 +1,8 @@
 <?php
 
-namespace FilamentCustomizer\Filament;
+namespace Filamizer\Filament;
 
-use FilamentCustomizer\CustomizerPlugin;
+use Filamizer\FilamizerPlugin;
 use Filament\Schemas\Components\Tabs\Tab;
 
 /**
@@ -15,7 +15,7 @@ class StudioAppearanceTab
         return Tab::make(__('Dashboard Appearance & Design System'))
             ->icon('heroicon-o-swatch')
             ->statePath('studio')
-            ->visible(fn (): bool => CustomizerPlugin::get()?->userCanCustomize() ?? false)
+            ->visible(fn (): bool => FilamizerPlugin::get()?->userCanCustomize() ?? false)
             ->schema(StudioAppearanceEditor::components(forUser: false));
     }
 }

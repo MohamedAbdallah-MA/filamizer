@@ -1,11 +1,11 @@
 <?php
 
-namespace FilamentCustomizer\Concerns;
+namespace Filamizer\Concerns;
 
-use FilamentCustomizer\Settings\StudioSettings;
-use FilamentCustomizer\CustomizerPlugin;
-use FilamentCustomizer\Support\StudioPreferences;
-use FilamentCustomizer\Support\StudioTheme;
+use Filamizer\Settings\StudioSettings;
+use Filamizer\FilamizerPlugin;
+use Filamizer\Support\StudioPreferences;
+use Filamizer\Support\StudioTheme;
 use Illuminate\Support\Arr;
 
 /**
@@ -83,11 +83,11 @@ trait InteractsWithStudioSettings
 
     protected function canManageStudioAppearance(): bool
     {
-        return CustomizerPlugin::get()?->userCanCustomize() ?? false;
+        return FilamizerPlugin::get()?->userCanCustomize() ?? false;
     }
 
     protected function studioResetValues(): array
     {
-        return Arr::only(config('filament-customizer.defaults', []), $this->studioEditableKeys());
+        return Arr::only(config('filamizer.defaults', []), $this->studioEditableKeys());
     }
 }

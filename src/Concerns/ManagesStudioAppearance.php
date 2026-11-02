@@ -1,10 +1,10 @@
 <?php
 
-namespace FilamentCustomizer\Concerns;
+namespace Filamizer\Concerns;
 
-use FilamentCustomizer\Models\StudioProfile;
-use FilamentCustomizer\Support\StudioPreferences;
-use FilamentCustomizer\Support\StudioTheme;
+use Filamizer\Models\StudioProfile;
+use Filamizer\Support\StudioPreferences;
+use Filamizer\Support\StudioTheme;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -107,7 +107,7 @@ trait ManagesStudioAppearance
         abort_unless($this->canManageStudioAppearance(), 403);
 
         $owner = $this->studioProfileOwnerId();
-        $name = mb_substr(trim(strip_tags($name)), 0, config('filament-customizer.profiles.name_max_length', 40));
+        $name = mb_substr(trim(strip_tags($name)), 0, config('filamizer.profiles.name_max_length', 40));
 
         if ($name === '') {
             return;
@@ -115,7 +115,7 @@ trait ManagesStudioAppearance
 
         $existing = StudioProfile::query()->where('user_id', $owner)->where('name', $name)->exists();
 
-        if (! $existing && $owner !== null && StudioProfile::query()->where('user_id', $owner)->count() >= config('filament-customizer.profiles.max_per_user', 20)) {
+        if (! $existing && $owner !== null && StudioProfile::query()->where('user_id', $owner)->count() >= config('filamizer.profiles.max_per_user', 20)) {
             Notification::make()->title(__('You have reached the profile limit. Delete one first.'))->danger()->send();
 
             return;
@@ -165,7 +165,7 @@ trait ManagesStudioAppearance
             $this->data['studio']['show_advanced'] = true;
             $key = explode('.', substr($path, strlen('data.studio.')))[0];
             foreach (['light', 'dark'] as $mode) {
-                if (in_array($key, config("filament-customizer.theme_keys.{$mode}", []), true)) {
+                if (in_array($key, config("filamizer.theme_keys.{$mode}", []), true)) {
                     $this->data['studio']['edit_mode'] = $mode;
                     break;
                 }

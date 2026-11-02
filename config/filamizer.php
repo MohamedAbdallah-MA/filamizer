@@ -390,7 +390,7 @@ return [
     | Skins, Sidebar & Backdrop
     |--------------------------------------------------------------------------
     |
-    | Skins are pre-built styles in resources/dist/filament-customizer.css, scoped
+    | Skins are pre-built styles in resources/dist/filamizer.css, scoped
     | under html[data-studio-skin]. They switch at runtime without a rebuild.
     |
     */
@@ -427,7 +427,7 @@ return [
     // Disk and folder for uploaded backdrop images.
     'backdrop_disk' => 'public',
 
-    'backdrop_directory' => 'filament-customizer',
+    'backdrop_directory' => 'filamizer',
 
     // Allowed ranges for the skin sliders.
     'ranges' => [

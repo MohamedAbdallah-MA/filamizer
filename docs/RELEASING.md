@@ -1,6 +1,6 @@
 # Release checklist
 
-This is an unpublished independent Filament Customizer package.
+This is an unpublished independent Filamizer package.
 
 1. Finalize the Composer vendor/name, repository, support contact and license.
    The current generic vendor is a working identity, not a reserved Packagist name.

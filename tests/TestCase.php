@@ -1,12 +1,12 @@
 <?php
 
-namespace FilamentCustomizer\Tests;
+namespace Filamizer\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
-use FilamentCustomizer\FilamentCustomizerServiceProvider;
-use FilamentCustomizer\Tests\Fixtures\PanelProvider;
-use FilamentCustomizer\Tests\Fixtures\User;
+use Filamizer\FilamizerServiceProvider;
+use Filamizer\Tests\Fixtures\PanelProvider;
+use Filamizer\Tests\Fixtures\User;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\Facades\Filament;
 use Filament\FilamentServiceProvider;
@@ -45,7 +45,7 @@ abstract class TestCase extends Orchestra
             FilamentServiceProvider::class,
             LaravelSettingsServiceProvider::class,
             SpatieLaravelSettingsPluginServiceProvider::class,
-            FilamentCustomizerServiceProvider::class,
+            FilamizerServiceProvider::class,
             PanelProvider::class,
         ];
     }
@@ -71,7 +71,7 @@ abstract class TestCase extends Orchestra
 
     protected function install(): void
     {
-        $this->artisan('filament-customizer:install', [
+        $this->artisan('filamizer:install', [
             '--migrate' => true, '--no-assets' => true, '--no-interaction' => true,
         ])->assertSuccessful();
     }

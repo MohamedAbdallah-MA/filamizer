@@ -1,6 +1,6 @@
 <?php
 
-namespace FilamentCustomizer\Commands;
+namespace Filamizer\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
@@ -9,24 +9,24 @@ use Spatie\LaravelSettings\LaravelSettingsServiceProvider;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'filament-customizer:install
+    protected $signature = 'filamizer:install
         {--force : Overwrite published config and allow migrations in production}
-        {--migrate : Run Filament Customizer migrations without prompting}
+        {--migrate : Run Filamizer migrations without prompting}
         {--no-assets : Skip publishing Filament assets}';
 
-    protected $description = 'Publish Filament Customizer configuration and assets, optionally migrate its storage';
+    protected $description = 'Publish Filamizer configuration and assets, optionally migrate its storage';
 
     public function handle(): int
     {
         if ($this->call('vendor:publish', [
-            '--tag' => 'filament-customizer-config',
+            '--tag' => 'filamizer-config',
             '--force' => (bool) $this->option('force'),
         ]) !== self::SUCCESS) {
             return self::FAILURE;
         }
 
         $migrate = $this->option('migrate')
-            || ($this->input->isInteractive() && $this->confirm('Run Filament Customizer migrations now?', true));
+            || ($this->input->isInteractive() && $this->confirm('Run Filamizer migrations now?', true));
 
         if ($migrate && $this->migrateStudio() !== self::SUCCESS) {
             return self::FAILURE;
@@ -36,10 +36,10 @@ class InstallCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info('Filament Customizer configured. Register CustomizerPlugin::make()->canCustomize(...) on your panel.');
+        $this->info('Filamizer configured. Register FilamizerPlugin::make()->canCustomize(...) on your panel.');
 
         if (! $migrate) {
-            $this->warn('Database migrations were skipped. Run filament-customizer:install --migrate before using the editors.');
+            $this->warn('Database migrations were skipped. Run filamizer:install --migrate before using the editors.');
         }
 
         return self::SUCCESS;
@@ -50,7 +50,7 @@ class InstallCommand extends Command
         // Historical Studio migrations use Spatie's default database table.
         if (config('settings.default_repository', 'database') !== 'database'
             || ! in_array(config('settings.repositories.database.table'), [null, 'settings'], true)) {
-            $this->error('Filament Customizer currently requires the default database settings repository and settings table.');
+            $this->error('Filamizer currently requires the default database settings repository and settings table.');
 
             return self::FAILURE;
         }

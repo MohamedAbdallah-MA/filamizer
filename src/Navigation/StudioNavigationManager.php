@@ -1,10 +1,10 @@
 <?php
 
-namespace FilamentCustomizer\Navigation;
+namespace Filamizer\Navigation;
 
 use Closure;
-use FilamentCustomizer\CustomizerPlugin;
-use FilamentCustomizer\Support\StudioTheme;
+use Filamizer\FilamizerPlugin;
+use Filamizer\Support\StudioTheme;
 use Filament\Navigation\NavigationManager;
 
 /**
@@ -19,7 +19,7 @@ class StudioNavigationManager extends NavigationManager
     {
         $navigation = parent::get();
 
-        if ($this->isLayoutDisabled || ! CustomizerPlugin::get()) {
+        if ($this->isLayoutDisabled || ! FilamizerPlugin::get()) {
             return $navigation;
         }
 

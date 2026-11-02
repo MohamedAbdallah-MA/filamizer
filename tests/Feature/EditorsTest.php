@@ -1,16 +1,16 @@
 <?php
 
-namespace FilamentCustomizer\Tests\Feature;
+namespace Filamizer\Tests\Feature;
 
-use FilamentCustomizer\Filament\Pages\ManageAppearance;
-use FilamentCustomizer\Filament\Pages\MyAppearance;
-use FilamentCustomizer\Models\StudioUserPreference;
-use FilamentCustomizer\Settings\StudioSettings;
-use FilamentCustomizer\CustomizerPlugin;
-use FilamentCustomizer\Support\StudioPreferences;
-use FilamentCustomizer\Support\StudioTheme;
-use FilamentCustomizer\Tests\Fixtures\User;
-use FilamentCustomizer\Tests\TestCase;
+use Filamizer\Filament\Pages\ManageAppearance;
+use Filamizer\Filament\Pages\MyAppearance;
+use Filamizer\Models\StudioUserPreference;
+use Filamizer\Settings\StudioSettings;
+use Filamizer\FilamizerPlugin;
+use Filamizer\Support\StudioPreferences;
+use Filamizer\Support\StudioTheme;
+use Filamizer\Tests\Fixtures\User;
+use Filamizer\Tests\TestCase;
 use Filament\Panel;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -59,7 +59,7 @@ class EditorsTest extends TestCase
     {
         $this->actingAs($this->user(true), 'studio');
         $this->get(ManageAppearance::getUrl())
-            ->assertOk()->assertSee('filament-customizer-styles', false)->assertSee('filament-customizer.css', false);
+            ->assertOk()->assertSee('filamizer-styles', false)->assertSee('filamizer.css', false);
         $this->get(MyAppearance::getUrl())->assertOk()->assertSee('My appearance');
     }
 
@@ -69,8 +69,8 @@ class EditorsTest extends TestCase
         $this->actingAs($this->user(), 'studio');
         $this->assertFalse(ManageAppearance::canAccess());
         Livewire::test(ManageAppearance::class)->assertForbidden();
-        CustomizerPlugin::get()->canCustomize(null);
-        $this->assertFalse(CustomizerPlugin::get()->userCanCustomize());
+        FilamizerPlugin::get()->canCustomize(null);
+        $this->assertFalse(FilamizerPlugin::get()->userCanCustomize());
     }
 
     public function test_personal_editor_uses_the_panel_guard_and_keeps_shared_defaults(): void
@@ -89,16 +89,16 @@ class EditorsTest extends TestCase
 
         $this->assertSame('#333333', StudioUserPreference::where('user_id', $panelUser->id)->first()->data['primary']);
         $this->assertSame('#111111', StudioUserPreference::where('user_id', $webUser->id)->first()->data['primary']);
-        $this->assertSame(config('filament-customizer.defaults.primary'), app(StudioSettings::class)->refresh()->primary);
+        $this->assertSame(config('filamizer.defaults.primary'), app(StudioSettings::class)->refresh()->primary);
     }
 
     public function test_pages_can_be_disabled_independently(): void
     {
         $this->actingAs($this->user(true), 'studio');
-        CustomizerPlugin::get()->settingsPage(false);
+        FilamizerPlugin::get()->settingsPage(false);
         $this->assertFalse(ManageAppearance::canAccess());
         $this->assertTrue(MyAppearance::canAccess());
-        CustomizerPlugin::get()->personalAppearance(false);
+        FilamizerPlugin::get()->personalAppearance(false);
         $this->assertFalse(MyAppearance::canAccess());
     }
 
@@ -106,7 +106,7 @@ class EditorsTest extends TestCase
     {
         $this->actingAs($this->user(true), 'studio');
         $panel = Panel::make()->id('without-editors')->path('without-editors')
-            ->plugin(CustomizerPlugin::make()->settingsPage(false)->personalAppearance(false));
+            ->plugin(FilamizerPlugin::make()->settingsPage(false)->personalAppearance(false));
 
         $this->assertNotContains(ManageAppearance::class, $panel->getPages());
         $this->assertNotContains(MyAppearance::class, $panel->getPages());
@@ -117,8 +117,8 @@ class EditorsTest extends TestCase
     {
         $this->actingAs($this->user(true), 'studio');
         $page = Livewire::test(ManageAppearance::class)->set('data.studio.primary', '#123456');
-        CustomizerPlugin::get()->canCustomize(fn (): bool => false);
+        FilamizerPlugin::get()->canCustomize(fn (): bool => false);
         $page->call('save')->assertForbidden();
-        $this->assertSame(config('filament-customizer.defaults.primary'), app(StudioSettings::class)->refresh()->primary);
+        $this->assertSame(config('filamizer.defaults.primary'), app(StudioSettings::class)->refresh()->primary);
     }
 }

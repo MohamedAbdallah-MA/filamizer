@@ -1,4 +1,4 @@
-# Filament Customizer architecture
+# Filamizer architecture
 
 This repository is a reusable Filament 5 panel plugin. A consuming Laravel
 application supplies its panel, authenticated user, database and authorization.
@@ -6,9 +6,9 @@ It has no dependency on a demonstration application's source code or data.
 
 ## Entry points
 
-- `FilamentCustomizerServiceProvider` registers configuration, migrations,
+- `FilamizerServiceProvider` registers configuration, migrations,
   translations, Blade views, scoped services, runtime CSS and the install command.
-- `CustomizerPlugin` registers global and personal appearance pages, render hooks,
+- `FilamizerPlugin` registers global and personal appearance pages, render hooks,
   navigation integration and panel-specific configuration callbacks.
 - `ManageAppearance` edits shared appearance and sidebar settings. Access requires
   an explicit `canCustomize()` callback and is checked again when saving.

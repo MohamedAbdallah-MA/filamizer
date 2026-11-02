@@ -6,3 +6,5 @@
 /phpunit.xml.dist export-ignore
 /.gitignore export-ignore
 /composer.lock export-ignore
+
+/artwork export-ignore

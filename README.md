@@ -1,4 +1,4 @@
-# Filament Customizer
+# Filamizer
 
 Customize a Filament panel at runtime, without compiling a custom theme: independent
 light/dark looks, five skins, animated backgrounds, fonts, sidebar layout, saved
@@ -6,8 +6,8 @@ profiles, and personal appearance overrides.
 
 **Pre-release:** an independent Filament 5 panel plugin. No host application,
 application models, roles package, business data, or branded presets are bundled.
-The working Composer identity is `filament-customizer/filament-customizer` and the
-PHP namespace is `FilamentCustomizer`. The vendor name must be available and owned
+The working Composer identity is `mohamedabdallah-ma/filamizer` and the
+PHP namespace is `Filamizer`. The vendor name must be available and owned
 by the publisher before publication. This is not an official Filament product.
 
 ## Requirements
@@ -28,13 +28,13 @@ user model and no roles package. Additional Laravel versions need release testin
 The following is the intended distribution flow once the package is published:
 
 ```sh
-composer require filament-customizer/filament-customizer
-php artisan filament-customizer:install --migrate
+composer require mohamedabdallah-ma/filamizer
+php artisan filamizer:install --migrate
 ```
 
 During local development, add this directory as a Composer `path` repository in
-your application and require `filament-customizer/filament-customizer:^0.1`. For an untagged local
-checkout, set the path repository's `options.versions.filament-customizer/filament-customizer` to
+your application and require `mohamedabdallah-ma/filamizer:^0.1`. For an untagged local
+checkout, set the path repository's `options.versions.mohamedabdallah-ma/filamizer` to
 `0.1.0`; release versions will come from repository tags.
 
 Register the plugin in your panel provider and explicitly authorize the people who
@@ -42,18 +42,18 @@ may change the shared appearance. The permission name below is an example: defin
 it with your own Laravel Gate or replace the closure with your application's rule.
 
 ```php
-use FilamentCustomizer\CustomizerPlugin;
+use Filamizer\FilamizerPlugin;
 use Filament\Facades\Filament;
 
 $panel->plugin(
-    CustomizerPlugin::make()
+    FilamizerPlugin::make()
         ->canCustomize(fn (): bool =>
             Filament::auth()->user()?->can('manage-panel-appearance') ?? false
         ),
 );
 ```
 
-The package registers **Dashboard appearance** at `/your-panel/studio` and **My
+The package registers **Dashboard appearance** at `/your-panel/filamizer` and **My
 appearance** in the user menu. Global editing is denied until `canCustomize()` is
 configured; there is no assumed `super_admin` role or host user method. Personal
 appearance is available to signed-in panel users while allowed skins are enabled.
@@ -94,13 +94,13 @@ CSP or offline requirements need to account for those external styles/font reque
 Disable the standalone global page if you already embed Studio in a settings page:
 
 ```php
-CustomizerPlugin::make()
+FilamizerPlugin::make()
     ->settingsPage(false)
     ->canCustomize(fn (): bool => /* your authorization rule */ false);
 ```
 
 For an existing `Filament\Pages\SettingsPage`, use
-`FilamentCustomizer\Concerns\InteractsWithStudioSettings`. Add
+`Filamizer\Concerns\InteractsWithStudioSettings`. Add
 `StudioAppearanceTab::make()` and `StudioSidebarTab::make()` from the package's
 `Filament` namespace to your tabs. Call `fillStudioData($data)` from
 `mutateFormDataBeforeFill()`, `saveStudioData($data)` from
@@ -140,20 +140,21 @@ For a local checkout, use this repository entry in the consuming application's
 {
   "repositories": [{
     "type": "path",
-    "url": "../filament-customizer",
+    "url": "../filamizer",
     "options": {
       "symlink": true,
-      "versions": {"filament-customizer/filament-customizer": "0.1.0"}
+      "versions": {"mohamedabdallah-ma/filamizer": "0.1.0"}
     }
   }]
 }
 ```
 
-Then run `composer require filament-customizer/filament-customizer:^0.1` and the
+Then run `composer require mohamedabdallah-ma/filamizer:^0.1` and the
 installer above. The Composer require command without this repository will work
 only after publication, or after configuring another distribution repository.
 
 See [uploading](docs/UPLOADING.md) for repository and directory submission steps.
+See [renaming](docs/RENAMING.md) when replacing an earlier development checkout.
 See [release preparation](docs/RELEASING.md) for the remaining publication work.
 
 ## License

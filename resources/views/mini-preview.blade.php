@@ -1,8 +1,8 @@
 @php
     $statePath = $getStatePath();
     $isRtl = __('filament-panels::layout.direction') === 'rtl';
-    $imageUrl = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl();
-    $darkImageUrl = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl(dark: true);
+    $imageUrl = \Filamizer\Support\StudioTheme::backdropImageUrl();
+    $darkImageUrl = \Filamizer\Support\StudioTheme::backdropImageUrl(dark: true);
 @endphp
 
 {{-- A small dashboard drawn with the theme being edited (light or dark), whatever mode the page is in. --}}
@@ -10,7 +10,7 @@
 <div
     x-data="{
         state: {},
-        images: { light: @js($imageUrl ? \FilamentCustomizer\Support\StudioTheme::cssUrl($imageUrl) : 'none'), dark: @js($darkImageUrl ? \FilamentCustomizer\Support\StudioTheme::cssUrl($darkImageUrl) : 'none') },
+        images: { light: @js($imageUrl ? \Filamizer\Support\StudioTheme::cssUrl($imageUrl) : 'none'), dark: @js($darkImageUrl ? \Filamizer\Support\StudioTheme::cssUrl($darkImageUrl) : 'none') },
         get imageCss() { return this.images[this.dark ? 'dark' : 'light'] },
         init() {
             this.state = $wire.get('{{ $statePath }}') ?? {}

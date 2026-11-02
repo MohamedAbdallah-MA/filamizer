@@ -1,6 +1,6 @@
 <?php
 
-namespace FilamentCustomizer\Support;
+namespace Filamizer\Support;
 
 use Filament\Enums\ThemeMode;
 use Filament\Support\Colors\Color;
@@ -26,7 +26,7 @@ class StudioTheme
 
     public static function default(string $key): mixed
     {
-        return config("filament-customizer.defaults.{$key}");
+        return config("filamizer.defaults.{$key}");
     }
 
     public static function isHex(mixed $value): bool
@@ -110,12 +110,12 @@ class StudioTheme
 
     public static function rootFontSize(): string
     {
-        return config('filament-customizer.font_sizes.'.static::option('font_size', 'font_sizes').'.size');
+        return config('filamizer.font_sizes.'.static::option('font_size', 'font_sizes').'.size');
     }
 
     public static function spacing(): string
     {
-        return config('filament-customizer.densities.'.static::option('density', 'densities').'.spacing');
+        return config('filamizer.densities.'.static::option('density', 'densities').'.spacing');
     }
 
     /**
@@ -123,7 +123,7 @@ class StudioTheme
      */
     public static function radii(): array
     {
-        $radius = config('filament-customizer.radii.'.static::option('radius', 'radii'));
+        $radius = config('filamizer.radii.'.static::option('radius', 'radii'));
 
         return collect($radius)->only(['sm', 'md', 'lg', 'xl'])->all();
     }
@@ -183,7 +183,7 @@ class StudioTheme
             return null;
         }
 
-        return rescue(fn () => Storage::disk(config('filament-customizer.backdrop_disk'))->url($path), null, false);
+        return rescue(fn () => Storage::disk(config('filamizer.backdrop_disk'))->url($path), null, false);
     }
 
     public static function isAuroraAnimated(bool $dark = false): bool
@@ -207,7 +207,7 @@ class StudioTheme
      */
     public static function range(string $key): int
     {
-        [$min, $max] = config("filament-customizer.ranges.{$key}");
+        [$min, $max] = config("filamizer.ranges.{$key}");
         $value = static::value($key);
 
         return is_numeric($value) ? max($min, min($max, (int) $value)) : static::default($key);
@@ -232,16 +232,16 @@ class StudioTheme
         $clean = [];
 
         foreach ($values as $key => $value) {
-            $default = config("filament-customizer.defaults.{$key}");
+            $default = config("filamizer.defaults.{$key}");
 
             if (isset($options[$key])) {
                 if ($value === null && in_array($key, ['preset', 'dark_preset'], true)) {
                     $clean[$key] = null;
-                } elseif (in_array($value, array_keys(config("filament-customizer.{$options[$key]}", [])), true)) {
+                } elseif (in_array($value, array_keys(config("filamizer.{$options[$key]}", [])), true)) {
                     $clean[$key] = $value;
                 }
-            } elseif (config()->has("filament-customizer.ranges.{$key}")) {
-                [$min, $max] = config("filament-customizer.ranges.{$key}");
+            } elseif (config()->has("filamizer.ranges.{$key}")) {
+                [$min, $max] = config("filamizer.ranges.{$key}");
 
                 if (is_numeric($value)) {
                     $clean[$key] = max($min, min($max, (int) $value));
@@ -254,7 +254,7 @@ class StudioTheme
                 }
             } elseif ($key === 'user_skins') {
                 if (is_array($value)) {
-                    $clean[$key] = array_values(array_intersect($value, array_keys(config('filament-customizer.skins', []))));
+                    $clean[$key] = array_values(array_intersect($value, array_keys(config('filamizer.skins', []))));
                 }
             } elseif (in_array($key, ['aurora_animated', 'dark_aurora_animated', 'glass_auto_readability', 'dark_glass_auto_readability'], true)) {
                 $boolean = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -302,7 +302,7 @@ class StudioTheme
     protected static function option(string $key, string $configList): string
     {
         $value = static::value($key);
-        $allowed = array_keys(config("filament-customizer.{$configList}", []));
+        $allowed = array_keys(config("filamizer.{$configList}", []));
 
         return in_array($value, $allowed, true) ? $value : static::default($key);
     }

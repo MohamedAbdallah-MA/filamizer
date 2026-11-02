@@ -15,7 +15,7 @@ return new class extends SettingsMigration
         $primary = json_decode((string) DB::table('settings')->where('group', 'studio')->where('name', 'primary')->value('payload'), true);
 
         foreach ($this->keys as $key) {
-            $value = $key === 'dark_primary' && is_string($primary) ? $primary : config("filament-customizer.defaults.{$key}");
+            $value = $key === 'dark_primary' && is_string($primary) ? $primary : config("filamizer.defaults.{$key}");
 
             $this->migrator->add("studio.{$key}", $value);
         }

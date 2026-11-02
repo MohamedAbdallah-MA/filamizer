@@ -1,12 +1,12 @@
 <?php
 
-namespace FilamentCustomizer\Filament\Pages;
+namespace Filamizer\Filament\Pages;
 
-use FilamentCustomizer\Concerns\ManagesStudioAppearance;
-use FilamentCustomizer\Filament\StudioAppearanceEditor;
-use FilamentCustomizer\Settings\StudioSettings;
-use FilamentCustomizer\CustomizerPlugin;
-use FilamentCustomizer\Support\StudioPreferences;
+use Filamizer\Concerns\ManagesStudioAppearance;
+use Filamizer\Filament\StudioAppearanceEditor;
+use Filamizer\Settings\StudioSettings;
+use Filamizer\FilamizerPlugin;
+use Filamizer\Support\StudioPreferences;
 use Filament\Facades\Filament;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Group;
@@ -31,8 +31,8 @@ class MyAppearance extends SettingsPage
     public static function canAccess(): bool
     {
         return Filament::auth()->check()
-            && CustomizerPlugin::get() !== null
-            && CustomizerPlugin::get()->hasPersonalAppearance()
+            && FilamizerPlugin::get() !== null
+            && FilamizerPlugin::get()->hasPersonalAppearance()
             && StudioPreferences::isUserCustomizationEnabled();
     }
 

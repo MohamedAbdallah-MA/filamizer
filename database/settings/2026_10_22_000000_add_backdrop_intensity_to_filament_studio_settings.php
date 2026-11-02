@@ -6,7 +6,7 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('studio.backdrop_intensity', config('filament-customizer.defaults.backdrop_intensity'));
+        $this->migrator->add('studio.backdrop_intensity', config('filamizer.defaults.backdrop_intensity'));
     }
 
     public function down(): void

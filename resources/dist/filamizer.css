@@ -2,7 +2,7 @@
 @layer properties, theme, base, components, utilities;
 
 /*
- * Filament Customizer skins.
+ * Filamizer skins.
  *
  * Every rule is scoped under an attribute on <html>, set by the plugin:
  *   data-studio-skin     classic | glass | neon | soft | minimal

@@ -1,6 +1,6 @@
 <?php
 
-namespace FilamentCustomizer\Support;
+namespace Filamizer\Support;
 
 use Filament\Support\Assets\Css;
 

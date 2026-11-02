@@ -1,13 +1,13 @@
 @php
     $statePath = $getStatePath();
-    $lightImage = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl();
-    $darkImage = \FilamentCustomizer\Support\StudioTheme::backdropImageUrl(dark: true);
+    $lightImage = \Filamizer\Support\StudioTheme::backdropImageUrl();
+    $darkImage = \Filamizer\Support\StudioTheme::backdropImageUrl(dark: true);
 
     $previewConfig = [
-        'spacing' => collect(config('filament-customizer.densities'))->map(fn ($d) => $d['spacing'])->all(),
-        'radii' => collect(config('filament-customizer.radii'))->map(fn ($r) => collect($r)->only(['sm', 'md', 'lg', 'xl'])->all())->all(),
-        'fontSizes' => collect(config('filament-customizer.font_sizes'))->map(fn ($s) => $s['size'])->all(),
-        'semantic' => \FilamentCustomizer\Support\StudioTheme::SEMANTIC_COLORS,
+        'spacing' => collect(config('filamizer.densities'))->map(fn ($d) => $d['spacing'])->all(),
+        'radii' => collect(config('filamizer.radii'))->map(fn ($r) => collect($r)->only(['sm', 'md', 'lg', 'xl'])->all())->all(),
+        'fontSizes' => collect(config('filamizer.font_sizes'))->map(fn ($s) => $s['size'])->all(),
+        'semantic' => \Filamizer\Support\StudioTheme::SEMANTIC_COLORS,
     ];
 
     $messages = [
@@ -24,7 +24,7 @@
         config: @js($previewConfig),
         messages: @js($messages),
         warnings: [],
-        images: { light: @js($lightImage ? \FilamentCustomizer\Support\StudioTheme::cssUrl($lightImage) : 'none'), dark: @js($darkImage ? \FilamentCustomizer\Support\StudioTheme::cssUrl($darkImage) : 'none') },
+        images: { light: @js($lightImage ? \Filamizer\Support\StudioTheme::cssUrl($lightImage) : 'none'), dark: @js($darkImage ? \Filamizer\Support\StudioTheme::cssUrl($darkImage) : 'none') },
         motionReduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
         hexPattern: /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
         // Share of the picked color per shade; light shades mix with white, dark ones with black.
@@ -211,7 +211,7 @@
     <div class="fi-studio-notice">
         <x-filament::icon icon="heroicon-o-eye" class="fi-studio-icon" />
         <span>
-            {{ $this instanceof \FilamentCustomizer\Filament\Pages\MyAppearance
+            {{ $this instanceof \Filamizer\Filament\Pages\MyAppearance
                 ? __('Changes preview live on this page. Save to keep them for you.')
                 : __('Changes preview live on this page. Save to apply them for everyone.') }}
         </span>

@@ -1,6 +1,6 @@
 <?php
 
-namespace FilamentCustomizer\Tests\Fixtures;
+namespace Filamizer\Tests\Fixtures;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;

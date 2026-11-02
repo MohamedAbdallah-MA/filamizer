@@ -1,10 +1,10 @@
 <?php
 
-namespace FilamentCustomizer\Tests\Feature;
+namespace Filamizer\Tests\Feature;
 
-use FilamentCustomizer\Models\StudioProfile;
-use FilamentCustomizer\Settings\StudioSettings;
-use FilamentCustomizer\Tests\TestCase;
+use Filamizer\Models\StudioProfile;
+use Filamizer\Settings\StudioSettings;
+use Filamizer\Tests\TestCase;
 use Illuminate\Support\Facades\Schema;
 
 class InstallationTest extends TestCase
@@ -22,7 +22,7 @@ class InstallationTest extends TestCase
         $this->assertSame([
             'corporate_navy', 'royal_indigo', 'forest_emerald', 'sunset_crimson',
             'modern_purple', 'amber', 'slate',
-        ], array_keys(config('filament-customizer.themes')));
+        ], array_keys(config('filamizer.themes')));
     }
 
     public function test_installer_leaves_unrelated_application_migrations_pending(): void
@@ -48,10 +48,10 @@ PHP);
 
     public function test_default_install_publishes_the_runtime_stylesheet(): void
     {
-        $this->artisan('filament-customizer:install', ['--no-interaction' => true])->assertSuccessful();
-        $published = public_path('css/filament-customizer/filament-customizer/filament-customizer.css');
+        $this->artisan('filamizer:install', ['--no-interaction' => true])->assertSuccessful();
+        $published = public_path('css/mohamedabdallah-ma/filamizer/filamizer.css');
         $this->assertFileExists($published);
-        $this->assertSame(hash_file('sha256', dirname(__DIR__, 2).'/resources/dist/filament-customizer.css'), hash_file('sha256', $published));
+        $this->assertSame(hash_file('sha256', dirname(__DIR__, 2).'/resources/dist/filamizer.css'), hash_file('sha256', $published));
     }
 
     public function test_fresh_install_builds_its_storage_and_is_repeatable(): void
@@ -76,14 +76,14 @@ PHP);
 
     public function test_non_interactive_install_does_not_migrate_unless_requested(): void
     {
-        $this->artisan('filament-customizer:install', ['--no-assets' => true, '--no-interaction' => true])->assertSuccessful();
+        $this->artisan('filamizer:install', ['--no-assets' => true, '--no-interaction' => true])->assertSuccessful();
         $this->assertFalse(Schema::hasTable('settings'));
     }
 
     public function test_unsupported_repository_returns_a_failure_instead_of_claiming_success(): void
     {
         config()->set('settings.repositories.database.table', 'custom_settings');
-        $this->artisan('filament-customizer:install', [
+        $this->artisan('filamizer:install', [
             '--migrate' => true, '--no-assets' => true, '--no-interaction' => true,
         ])->assertFailed();
         $this->assertFalse(Schema::hasTable('studio_profiles'));

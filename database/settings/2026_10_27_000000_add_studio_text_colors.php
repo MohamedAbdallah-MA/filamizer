@@ -21,7 +21,7 @@ return new class extends SettingsMigration
         foreach ($this->keys as $key) {
             $value = $existing[$key];
             if (! is_string($value) || ! preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value)) {
-                $value = config("filament-customizer.defaults.{$key}");
+                $value = config("filamizer.defaults.{$key}");
             }
             $this->migrator->add("studio.{$key}", $value);
         }

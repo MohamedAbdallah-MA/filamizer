@@ -1,13 +1,13 @@
 <?php
 
-namespace FilamentCustomizer\Filament\Pages;
+namespace Filamizer\Filament\Pages;
 
 use BackedEnum;
-use FilamentCustomizer\Concerns\InteractsWithStudioSettings;
-use FilamentCustomizer\Filament\StudioAppearanceTab;
-use FilamentCustomizer\Filament\StudioSidebarTab;
-use FilamentCustomizer\Settings\StudioSettings;
-use FilamentCustomizer\CustomizerPlugin;
+use Filamizer\Concerns\InteractsWithStudioSettings;
+use Filamizer\Filament\StudioAppearanceTab;
+use Filamizer\Filament\StudioSidebarTab;
+use Filamizer\Settings\StudioSettings;
+use Filamizer\FilamizerPlugin;
 use Filament\Facades\Filament;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Tabs;
@@ -21,13 +21,13 @@ class ManageAppearance extends SettingsPage
 
     protected static string $settings = StudioSettings::class;
 
-    protected static ?string $slug = 'studio';
+    protected static ?string $slug = 'filamizer';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 
     public static function canAccess(): bool
     {
-        $plugin = CustomizerPlugin::get();
+        $plugin = FilamizerPlugin::get();
 
         return Filament::auth()->check()
             && ($plugin?->hasSettingsPage() ?? false)

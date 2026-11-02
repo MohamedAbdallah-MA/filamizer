@@ -1,18 +1,18 @@
 <?php
 
-namespace FilamentCustomizer;
+namespace Filamizer;
 
 use Closure;
-use FilamentCustomizer\Filament\Pages\ManageAppearance;
-use FilamentCustomizer\Filament\Pages\MyAppearance;
-use FilamentCustomizer\Support\StudioTheme;
+use Filamizer\Filament\Pages\ManageAppearance;
+use Filamizer\Filament\Pages\MyAppearance;
+use Filamizer\Support\StudioTheme;
 use Filament\Actions\Action;
 use Filament\Contracts\Plugin;
 use Filament\FontProviders\GoogleFontProvider;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 
-class CustomizerPlugin implements Plugin
+class FilamizerPlugin implements Plugin
 {
     protected ?Closure $canCustomize = null;
 
@@ -29,12 +29,12 @@ class CustomizerPlugin implements Plugin
     {
         $panel = filament()->getCurrentOrDefaultPanel();
 
-        return $panel?->hasPlugin('filament-customizer') ? $panel->getPlugin('filament-customizer') : null;
+        return $panel?->hasPlugin('filamizer') ? $panel->getPlugin('filamizer') : null;
     }
 
     public function getId(): string
     {
-        return 'filament-customizer';
+        return 'filamizer';
     }
 
     /**
@@ -97,11 +97,11 @@ class CustomizerPlugin implements Plugin
             ->sidebarCollapsibleOnDesktop(fn (): bool => StudioTheme::isSidebarCollapsible())
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn () => view('filament-customizer::styles'),
+                fn () => view('filamizer::styles'),
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                fn () => view('filament-customizer::liquid-glass'),
+                fn () => view('filamizer::liquid-glass'),
             )
             ->pages([
                 ...($this->hasSettingsPage() ? [ManageAppearance::class] : []),

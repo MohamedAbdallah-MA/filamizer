@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-- Establish an independent Filament Customizer package and PHP namespace.
+- Rename the public package, PHP namespace, installer, configuration, asset and
+  view paths to Filamizer while retaining persisted settings/profile identifiers.
+- Add refreshed Filamizer listing artwork and development-upgrade instructions.
+
+- Establish an independent Filamizer package and PHP namespace.
 - Remove branded presets and warm neutral palette; use Royal Indigo defaults.
 - Include independent light/dark appearance, five skins, backgrounds, typography,
   sidebar customization, shared profiles and personal profiles.

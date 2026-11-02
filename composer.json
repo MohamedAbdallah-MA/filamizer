@@ -1,5 +1,5 @@
 {
-    "name": "filament-customizer/filament-customizer",
+    "name": "mohamedabdallah-ma/filamizer",
     "description": "Runtime dashboard customizer for Filament panels: theme presets, colors, Arabic/Latin fonts, density, radius and dark mode.",
     "type": "library",
     "license": "proprietary",
@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FilamentCustomizer\\": "src/"
+            "Filamizer\\": "src/"
         }
     },
     "require-dev": {
@@ -23,7 +23,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "FilamentCustomizer\\Tests\\": "tests/"
+            "Filamizer\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -31,12 +31,12 @@
         "format": "@php vendor/bin/pint"
     },
     "archive": {
-        "exclude": ["/vendor", "/tests", "/.github", "/.phpunit.cache", "/docs/ARCHITECTURE.md", "/docs/UX-EXPERIMENT.md", "/composer.lock"]
+        "exclude": ["/artwork", "/vendor", "/tests", "/.github", "/.phpunit.cache", "/docs/ARCHITECTURE.md", "/docs/UX-EXPERIMENT.md", "/composer.lock"]
     },
     "extra": {
         "laravel": {
             "providers": [
-                "FilamentCustomizer\\FilamentCustomizerServiceProvider"
+                "Filamizer\\FilamizerServiceProvider"
             ]
         }
     },

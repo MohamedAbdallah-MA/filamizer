@@ -12,7 +12,7 @@ return new class extends SettingsMigration
     public function up(): void
     {
         foreach ($this->keys as $key) {
-            $this->migrator->add("studio.{$key}", config("filament-customizer.defaults.{$key}"));
+            $this->migrator->add("studio.{$key}", config("filamizer.defaults.{$key}"));
         }
     }
 

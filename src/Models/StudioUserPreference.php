@@ -1,6 +1,6 @@
 <?php
 
-namespace FilamentCustomizer\Models;
+namespace Filamizer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
