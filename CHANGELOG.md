@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- License Filamizer under MIT, copyright 2026 Mohamed Abdallah.
+
 - Rename the public package, PHP namespace, installer, configuration, asset and
   view paths to Filamizer while retaining persisted settings/profile identifiers.
 - Add refreshed Filamizer listing artwork and development-upgrade instructions.

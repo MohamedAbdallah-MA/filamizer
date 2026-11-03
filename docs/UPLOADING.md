@@ -11,8 +11,8 @@ vendor/package name. Check that you own the chosen vendor before publishing;
 change `composer.json`, the asset package ID in the service provider, the asset
 publication test and documentation together if you choose another vendor.
 
-Finalize licensing first. The current license is proprietary; these instructions
-do not grant redistribution rights or choose an open-source license for you.
+Filamizer is distributed under the MIT license. Keep the root `LICENSE` file and
+its copyright notice in the distributed package.
 Complete [the release checklist](RELEASING.md), then run:
 
 ```sh

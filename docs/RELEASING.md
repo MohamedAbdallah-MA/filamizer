@@ -2,7 +2,8 @@
 
 This is an unpublished independent Filamizer package.
 
-1. Finalize the Composer vendor/name, repository, support contact and license.
+1. Confirm the Composer vendor/name, repository and support contact. The package
+   uses MIT; keep `LICENSE` included in the release archive.
    The current generic vendor is a working identity, not a reserved Packagist name.
 2. Run `composer validate --strict`, `composer install`, and `composer test`.
    Run the PHP 8.2/8.3/8.4 CI matrix and verify the advertised Laravel/Filament range.

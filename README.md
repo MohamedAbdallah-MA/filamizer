@@ -159,5 +159,4 @@ See [release preparation](docs/RELEASING.md) for the remaining publication work.
 
 ## License
 
-Proprietary. No open-source or redistribution license is granted by this preparation
-work. Distribution terms must be finalized by the owner before release.
+Filamizer is licensed under the [MIT License](LICENSE).
