@@ -6,7 +6,7 @@ profiles, and personal appearance overrides.
 
 **Pre-release:** an independent Filament 5 panel plugin. No host application,
 application models, roles package, business data, or branded presets are bundled.
-The working Composer identity is `mohamedabdallah-ma/filamizer` and the
+The working Composer identity is `filamizer/filamizer` and the
 PHP namespace is `Filamizer`. The vendor name must be available and owned
 by the publisher before publication. This is not an official Filament product.
 
@@ -28,13 +28,13 @@ user model and no roles package. Additional Laravel versions need release testin
 The following is the intended distribution flow once the package is published:
 
 ```sh
-composer require mohamedabdallah-ma/filamizer
+composer require filamizer/filamizer
 php artisan filamizer:install --migrate
 ```
 
 During local development, add this directory as a Composer `path` repository in
-your application and require `mohamedabdallah-ma/filamizer:^0.1`. For an untagged local
-checkout, set the path repository's `options.versions.mohamedabdallah-ma/filamizer` to
+your application and require `filamizer/filamizer:^0.1`. For an untagged local
+checkout, set the path repository's `options.versions.filamizer/filamizer` to
 `0.1.0`; release versions will come from repository tags.
 
 Register the plugin in your panel provider and explicitly authorize the people who
@@ -143,13 +143,13 @@ For a local checkout, use this repository entry in the consuming application's
     "url": "../filamizer",
     "options": {
       "symlink": true,
-      "versions": {"mohamedabdallah-ma/filamizer": "0.1.0"}
+      "versions": {"filamizer/filamizer": "0.1.0"}
     }
   }]
 }
 ```
 
-Then run `composer require mohamedabdallah-ma/filamizer:^0.1` and the
+Then run `composer require filamizer/filamizer:^0.1` and the
 installer above. The Composer require command without this repository will work
 only after publication, or after configuring another distribution repository.
 

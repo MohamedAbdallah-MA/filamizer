@@ -1,5 +1,5 @@
 {
-    "name": "mohamedabdallah-ma/filamizer",
+    "name": "filamizer/filamizer",
     "description": "Runtime dashboard customizer for Filament panels: theme presets, colors, Arabic/Latin fonts, density, radius and dark mode.",
     "type": "library",
     "license": "MIT",

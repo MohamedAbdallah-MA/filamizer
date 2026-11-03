@@ -3,7 +3,7 @@
 - Name: Filamizer
 - Slug: filamizer
 - GitHub repository: MohamedAbdallah-MA/filamizer
-- Composer package: mohamedabdallah-ma/filamizer
+- Composer package: filamizer/filamizer
 - Documentation URL: https://raw.githubusercontent.com/MohamedAbdallah-MA/filamizer/main/README.md
 - Main image: filamizer-image-2560x1440.jpg
 - Thumbnail: filamizer-thumbnail-1280x720.jpg

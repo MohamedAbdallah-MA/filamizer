@@ -1,11 +1,12 @@
 # Uploading Filamizer
 
 This folder is the package repository root. It contains source, tests and CI;
-the consuming Laravel application is separate. Nothing has been published yet.
+the consuming Laravel application is separate. The Composer identity is now
+`filamizer/filamizer`; its registration is separate from any earlier listing.
 
 ## 1. Prepare the identity and release
 
-The working Composer name is `mohamedabdallah-ma/filamizer`, with
+The working Composer name is `filamizer/filamizer`, with
 `Filamizer\FilamizerPlugin` as the plugin class. Composer requires a
 vendor/package name. Check that you own the chosen vendor before publishing;
 change `composer.json`, the asset package ID in the service provider, the asset
@@ -57,7 +58,7 @@ git push origin v0.1.0-beta.1
 
 Composer derives release versions from Git tags; do not add a hard-coded version
 to the package's `composer.json`. A beta tag requires consumers to opt into beta
-stability, for example `composer require mohamedabdallah-ma/filamizer:^0.1@beta`.
+stability, for example `composer require filamizer/filamizer:^0.1@beta`.
 
 ## 3. Make the package installable
 
@@ -86,3 +87,15 @@ Official references:
 - [Filament plugin development](https://filamentphp.com/docs/5.x/plugins/getting-started)
 - [Packagist submission and package naming](https://packagist.org/about)
 - [Composer libraries and version tags](https://getcomposer.org/doc/02-libraries.md)
+
+## Replacing the earlier Composer listing
+
+Push the commit that sets `name` to `filamizer/filamizer`, then submit the same
+GitHub repository URL to Packagist for the new package identity. Existing published
+Git tags retain their original metadata; create a new version tag from the renamed
+commit when preparing the next release rather than moving an existing tag.
+
+Once the new package is published and installation is verified, mark the earlier
+package listing abandoned with `filamizer/filamizer` as the replacement. Update the
+Filament listing Composer field. Its GitHub and documentation URLs stay unchanged.
+The `filamizer` vendor must be available or owned by the submitting maintainer.

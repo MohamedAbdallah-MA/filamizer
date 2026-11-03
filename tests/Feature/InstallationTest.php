@@ -49,7 +49,7 @@ PHP);
     public function test_default_install_publishes_the_runtime_stylesheet(): void
     {
         $this->artisan('filamizer:install', ['--no-interaction' => true])->assertSuccessful();
-        $published = public_path('css/mohamedabdallah-ma/filamizer/filamizer.css');
+        $published = public_path('css/filamizer/filamizer/filamizer.css');
         $this->assertFileExists($published);
         $this->assertSame(hash_file('sha256', dirname(__DIR__, 2).'/resources/dist/filamizer.css'), hash_file('sha256', $published));
     }

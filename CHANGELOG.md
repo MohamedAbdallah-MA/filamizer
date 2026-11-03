@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Use `filamizer/filamizer` as the Composer package and asset vendor identity.
+
 - License Filamizer under MIT, copyright 2026 Mohamed Abdallah.
 
 - Rename the public package, PHP namespace, installer, configuration, asset and

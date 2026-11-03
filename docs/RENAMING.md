@@ -1,6 +1,6 @@
 # Filamizer rename
 
-The package now uses `mohamedabdallah-ma/filamizer`, the `Filamizer` PHP namespace,
+The package now uses `filamizer/filamizer`, the `Filamizer` PHP namespace,
 `FilamizerPlugin`, `FilamizerServiceProvider`, `filamizer.php` configuration,
 `filamizer:install`, and the `filamizer` plugin ID and Blade view namespace.
 The shared editor is available at `/your-panel/filamizer`.
@@ -15,7 +15,7 @@ The shared editor is available at `/your-panel/filamizer`.
 3. If configuration was published under the former package name, copy its intended
    custom values into `config/filamizer.php`. Update custom view overrides and
    direct plugin/config lookups to the new names as applicable.
-4. Run `composer update mohamedabdallah-ma/filamizer`, clear application caches,
+4. Run `composer update filamizer/filamizer`, clear application caches,
    and run `php artisan filamizer:install --migrate` to publish the new asset path
    and install any missing package storage. Avoid `--force` unless deliberately
    replacing published configuration.

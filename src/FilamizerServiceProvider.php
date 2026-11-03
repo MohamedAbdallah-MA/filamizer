@@ -42,6 +42,6 @@ class FilamizerServiceProvider extends PackageServiceProvider
 
         FilamentAsset::register([
             StudioCss::make('filamizer', __DIR__.'/../resources/dist/filamizer.css'),
-        ], package: 'mohamedabdallah-ma/filamizer');
+        ], package: 'filamizer/filamizer');
     }
 }
