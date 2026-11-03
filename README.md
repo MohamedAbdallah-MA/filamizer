@@ -159,4 +159,6 @@ See [release preparation](docs/RELEASING.md) for the remaining publication work.
 
 ## License
 
+For vulnerability reporting and security support, see [Security policy](SECURITY.md).
+
 Filamizer is licensed under the [MIT License](LICENSE).

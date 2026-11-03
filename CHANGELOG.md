@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Pin CI actions to verified commit hashes, restrict token permissions and add
+  scheduled dependency auditing, Dependabot updates and a security policy.
+
 - Use `filamizer/filamizer` as the Composer package and asset vendor identity.
 
 - License Filamizer under MIT, copyright 2026 Mohamed Abdallah.
