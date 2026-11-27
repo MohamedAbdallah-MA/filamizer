@@ -1,0 +1,47 @@
+{
+  "provider": "freesound",
+  "query": "cinematic impact",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:755055",
+      "title": "Sound Design Elements Impact SFX PS 018",
+      "author": "AudioPapkin",
+      "duration_seconds": 2.74132,
+      "preview_url": "https://cdn.freesound.org/previews/755/755055_8698658-hq.mp3",
+      "downloads": 357,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/755055/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://buymeacoffee.com/audiopapkin Impact effect,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": 4.6,
+      "rating_count": 13
+    },
+    {
+      "id": "fs:823236",
+      "title": "Sound Design Elements Impact SFX PS 102",
+      "author": "AudioPapkin",
+      "duration_seconds": 1.888,
+      "preview_url": "https://cdn.freesound.org/previews/823/823236_8698658-hq.mp3",
+      "downloads": 267,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/823236/",
+      "license_label": "Creative Commons 0",
+      "description": "A powerful and cinematic sound design impact, perfect for trailers, transitions, and dramatic moments. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 8 REAPER DAW - audio processing",
+      "rating": 4.5,
+      "rating_count": 10
+    },
+    {
+      "id": "fs:812711",
+      "title": "Sound Design Elements Impact SFX PS 045",
+      "author": "AudioPapkin",
+      "duration_seconds": 2.84267,
+      "preview_url": "https://cdn.freesound.org/previews/812/812711_8698658-hq.mp3",
+      "downloads": 102,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812711/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Impact SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 8 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": null,
+      "rating_count": null
+    }
+  ]
+}

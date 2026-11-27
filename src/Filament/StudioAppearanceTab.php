@@ -14,6 +14,7 @@ class StudioAppearanceTab
     {
         return Tab::make(__('Dashboard Appearance & Design System'))
             ->icon('heroicon-o-swatch')
+            ->key('studio-appearance')
             ->statePath('studio')
             ->visible(fn (): bool => FilamizerPlugin::get()?->userCanCustomize() ?? false)
             ->schema(StudioAppearanceEditor::components(forUser: false));

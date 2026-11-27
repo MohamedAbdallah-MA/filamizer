@@ -1,0 +1,21 @@
+{
+  "provider": "freesound",
+  "query": "glass shimmer",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:562196",
+      "title": "snd_fragment_retrieve.wav",
+      "author": "gristi",
+      "duration_seconds": 1.7015,
+      "preview_url": "https://cdn.freesound.org/previews/562/562196_12618935-hq.mp3",
+      "downloads": 2398,
+      "page_url": "https://freesound.org/people/gristi/sounds/562196/",
+      "license_label": "Creative Commons 0",
+      "description": "A light glassy \"ping\", like a crystal object hitting the ground.",
+      "rating": 4.9,
+      "rating_count": 42
+    }
+  ]
+}

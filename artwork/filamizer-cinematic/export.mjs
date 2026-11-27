@@ -1,0 +1,12 @@
+import {spawnSync} from 'node:child_process';
+import fs from 'node:fs';
+import ffmpeg from 'ffmpeg-static';
+const run=(command,args)=>{const r=spawnSync(command,args,{stdio:'inherit'});if(r.status!==0)throw new Error(`${command} exited ${r.status}`);};
+const py=process.platform==='win32'?'.venv/Scripts/python.exe':'.venv/bin/python';
+if(!fs.existsSync(py))throw new Error('Create the local Python environment described in README.md first.');
+run(process.execPath,['node_modules/@remotion/cli/remotion-cli.js','render','src/index.ts','Filamizer-Cinematic','out/filamizer-silent.mp4','--muted','--concurrency=4','--crf=18']);
+run(process.execPath,['export-cues.mjs']);run(py,['audio_pipeline.py']);
+fs.mkdirSync('exports',{recursive:true});
+run(ffmpeg,['-hide_banner','-loglevel','error','-y','-i','out/filamizer-silent.mp4','-i','out/sfx-mix.wav','-c:v','copy','-c:a','aac','-b:a','192k','-ar','48000','-t','60','-movflags','+faststart','exports/filamizer-cinematic-60s.mp4']);
+run(ffmpeg,['-hide_banner','-loglevel','error','-y','-i','exports/filamizer-cinematic-60s.mp4','-vf','select=eq(n\\,110)','-frames:v','1','exports/filamizer-cinematic-poster.jpg']);
+run(py,['audio_pipeline.py','--verify']);

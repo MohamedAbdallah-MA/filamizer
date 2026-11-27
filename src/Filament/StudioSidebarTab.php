@@ -13,6 +13,7 @@ class StudioSidebarTab
     {
         return Tab::make(__('Sidebar'))
             ->icon('heroicon-o-bars-3-bottom-left')
+            ->key('studio-sidebar')
             ->statePath('studio')
             ->visible(fn (): bool => FilamizerPlugin::get()?->userCanCustomize() ?? false)
             ->schema([

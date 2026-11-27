@@ -1,0 +1,3 @@
+const fs=require('node:fs');
+const {createCanvas,loadImage}=require('../video/node_modules/@napi-rs/canvas');
+(async()=>{const files=fs.readdirSync('out/qa/frames').filter(f=>f.endsWith('.png'));const c=createCanvas(1920,Math.ceil(files.length/4)*304);const g=c.getContext('2d');g.fillStyle='#080b14';g.fillRect(0,0,c.width,c.height);for(let i=0;i<files.length;i++){g.drawImage(await loadImage('out/qa/frames/'+files[i]),i%4*480,Math.floor(i/4)*304,480,270);g.fillStyle='#fff';g.font='20px Arial';g.fillText(files[i],i%4*480+12,Math.floor(i/4)*304+294);}fs.writeFileSync('out/qa/contact.png',c.toBuffer('image/png'));})();

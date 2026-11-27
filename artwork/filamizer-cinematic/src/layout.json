@@ -1,0 +1,295 @@
+{
+  "classic": {
+    "pageH": 2322,
+    "file": "classic-full.png",
+    "boxes": {
+      "mini": {
+        "x": 1263.1875,
+        "y": 573.140625,
+        "width": 428.796875,
+        "height": 198,
+        "file": "classic-mini.png"
+      },
+      "modes": {
+        "x": 536,
+        "y": 517.140625,
+        "width": 691.1875,
+        "height": 309,
+        "file": "classic-modes.png"
+      },
+      "skins": {
+        "x": 560,
+        "y": 983.140625,
+        "width": 643.1875,
+        "height": 84,
+        "file": "classic-skins.png"
+      },
+      "style": {
+        "x": 536,
+        "y": 850.140625,
+        "width": 691.1875,
+        "height": 357,
+        "file": "classic-style.png"
+      }
+    }
+  },
+  "glass": {
+    "pageH": 2502,
+    "file": "glass-full.png",
+    "boxes": {
+      "mini": {
+        "x": 1263.1875,
+        "y": 573.140625,
+        "width": 428.796875,
+        "height": 198,
+        "file": "glass-mini.png"
+      },
+      "modes": {
+        "x": 536,
+        "y": 517.140625,
+        "width": 691.1875,
+        "height": 309,
+        "file": "glass-modes.png"
+      },
+      "skins": {
+        "x": 560,
+        "y": 983.140625,
+        "width": 643.1875,
+        "height": 84,
+        "file": "glass-skins.png"
+      },
+      "style": {
+        "x": 536,
+        "y": 850.140625,
+        "width": 691.1875,
+        "height": 357,
+        "file": "glass-style.png"
+      },
+      "background": {
+        "x": 536,
+        "y": 1231.140625,
+        "width": 691.1875,
+        "height": 491,
+        "file": "glass-background.png"
+      },
+      "save": {
+        "x": 1263.1875,
+        "y": 1300,
+        "width": 428.796875,
+        "height": 36,
+        "file": "glass-save.png"
+      }
+    }
+  },
+  "advanced": {
+    "pageH": 3897,
+    "file": "advanced-full.png",
+    "boxes": {
+      "mini": {
+        "x": 1263.1875,
+        "y": 573.140625,
+        "width": 428.796875,
+        "height": 198,
+        "file": "advanced-mini.png"
+      },
+      "modes": {
+        "x": 536,
+        "y": 517.140625,
+        "width": 691.1875,
+        "height": 309,
+        "file": "advanced-modes.png"
+      },
+      "skins": {
+        "x": 560,
+        "y": 983.140625,
+        "width": 643.1875,
+        "height": 84,
+        "file": "advanced-skins.png"
+      },
+      "style": {
+        "x": 536,
+        "y": 850.140625,
+        "width": 691.1875,
+        "height": 894,
+        "file": "advanced-style.png"
+      },
+      "background": {
+        "x": 536,
+        "y": 1768.140625,
+        "width": 691.1875,
+        "height": 717,
+        "file": "advanced-background.png"
+      },
+      "reading": {
+        "x": 536,
+        "y": 2509.140625,
+        "width": 691.1875,
+        "height": 485,
+        "file": "advanced-reading.png"
+      }
+    }
+  },
+  "tuned": {
+    "pageH": 3623,
+    "file": "tuned-full.png",
+    "boxes": {
+      "reading": {
+        "x": 530.390625,
+        "y": 2345.78125,
+        "width": 698.890625,
+        "height": 452.390625,
+        "file": "tuned-reading.png"
+      },
+      "mini": {
+        "x": 1262.875,
+        "y": 2168,
+        "width": 434.734375,
+        "height": 198,
+        "file": "tuned-mini.png"
+      }
+    }
+  },
+  "dark": {
+    "pageH": 2981,
+    "file": "dark-full.png",
+    "boxes": {
+      "mini": {
+        "x": 1262.875,
+        "y": 545.046875,
+        "width": 434.734375,
+        "height": 198,
+        "file": "dark-mini.png"
+      },
+      "modes": {
+        "x": 530.390625,
+        "y": 489.046875,
+        "width": 698.890625,
+        "height": 290.0625,
+        "file": "dark-modes.png"
+      },
+      "skins": {
+        "x": 551.984375,
+        "y": 924.453125,
+        "width": 655.703125,
+        "height": 84,
+        "file": "dark-skins.png"
+      },
+      "style": {
+        "x": 530.390625,
+        "y": 800.703125,
+        "width": 698.890625,
+        "height": 569.8125,
+        "file": "dark-style.png"
+      },
+      "background": {
+        "x": 530.390625,
+        "y": 1392.109375,
+        "width": 698.890625,
+        "height": 290.265625,
+        "file": "dark-background.png"
+      }
+    }
+  },
+  "sidebar": {
+    "pageH": 2981,
+    "file": "sidebar-full.png",
+    "boxes": {
+      "builder": {
+        "x": 530.390625,
+        "y": 2547.484375,
+        "width": 1179.21875,
+        "height": 326.9375,
+        "file": "sidebar-builder.png"
+      }
+    }
+  },
+  "sidebar-group": {
+    "pageH": 3150,
+    "file": "sidebar-group-full.png",
+    "boxes": {
+      "builder": {
+        "x": 530.390625,
+        "y": 2547.484375,
+        "width": 1179.21875,
+        "height": 496.078125,
+        "file": "sidebar-group-builder.png"
+      }
+    }
+  },
+  "saved": {
+    "pageH": 2484,
+    "file": "saved-full.png",
+    "boxes": {
+      "profiles": {
+        "x": 530.390625,
+        "y": 314.15625,
+        "width": 1179.21875,
+        "height": 185.296875,
+        "file": "saved-profiles.png"
+      },
+      "mini": {
+        "x": 1262.875,
+        "y": 577.046875,
+        "width": 434.734375,
+        "height": 198,
+        "file": "saved-mini.png"
+      }
+    }
+  },
+  "personal": {
+    "pageH": 1929,
+    "file": "personal-full.png",
+    "boxes": {
+      "mini": {
+        "x": 1267.1875,
+        "y": 537.265625,
+        "width": 452.015625,
+        "height": 198,
+        "file": "personal-mini.png"
+      },
+      "profiles": {
+        "x": 508.796875,
+        "y": 274.375,
+        "width": 1222.40625,
+        "height": 185.296875,
+        "file": "personal-profiles.png"
+      }
+    }
+  },
+  "mesh": {
+    "pageH": 3905,
+    "file": "mesh-full.png",
+    "boxes": {
+      "background": {
+        "x": 536,
+        "y": 1800.140625,
+        "width": 691.1875,
+        "height": 597
+      },
+      "reading": {
+        "x": 536,
+        "y": 2421.140625,
+        "width": 691.1875,
+        "height": 485
+      }
+    }
+  },
+  "fonts-open": {
+    "pageH": 4025,
+    "file": "fonts-open-full.png",
+    "boxes": {
+      "background": {
+        "x": 536,
+        "y": 1800.140625,
+        "width": 691.1875,
+        "height": 717
+      },
+      "reading": {
+        "x": 536,
+        "y": 2541.140625,
+        "width": 691.1875,
+        "height": 485
+      }
+    }
+  }
+}

@@ -59,7 +59,11 @@ class EditorsTest extends TestCase
     {
         $this->actingAs($this->user(true), 'studio');
         $this->get(ManageAppearance::getUrl())
-            ->assertOk()->assertSee('filamizer-styles', false)->assertSee('filamizer.css', false);
+            ->assertOk()
+            ->assertSee('filamizer-styles', false)
+            ->assertSee('filamizer.css', false)
+            ->assertSee('aria-controls="form.studio-appearance"', false)
+            ->assertSee('aria-controls="form.studio-sidebar"', false);
         $this->get(MyAppearance::getUrl())->assertOk()->assertSee('My appearance');
     }
 

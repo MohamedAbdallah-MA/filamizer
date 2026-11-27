@@ -1,0 +1,47 @@
+{
+  "provider": "freesound",
+  "query": "mouse click",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:687107",
+      "title": "Mouse 2 Button Fast Click",
+      "author": "aphom000",
+      "duration_seconds": 0.240907,
+      "preview_url": "https://cdn.freesound.org/previews/687/687107_11545182-hq.mp3",
+      "downloads": 3205,
+      "page_url": "https://freesound.org/people/aphom000/sounds/687107/",
+      "license_label": "Creative Commons 0",
+      "description": "Audio of a mouse's right button being clicked quickly.",
+      "rating": 4.8,
+      "rating_count": 64
+    },
+    {
+      "id": "fs:534104",
+      "title": "mouse-click-double-00.flac",
+      "author": "pbimal",
+      "duration_seconds": 0.470295,
+      "preview_url": "https://cdn.freesound.org/previews/534/534104_11830391-hq.mp3",
+      "downloads": 7751,
+      "page_url": "https://freesound.org/people/pbimal/sounds/534104/",
+      "license_label": "Creative Commons 0",
+      "description": "Double click mouse button.",
+      "rating": 4.8,
+      "rating_count": 108
+    },
+    {
+      "id": "fs:860688",
+      "title": "Mouse click",
+      "author": "OwenMellor",
+      "duration_seconds": 0.612979,
+      "preview_url": "https://cdn.freesound.org/previews/860/860688_19012800-hq.mp3",
+      "downloads": 21,
+      "page_url": "https://freesound.org/people/OwenMellor/sounds/860688/",
+      "license_label": "Creative Commons 0",
+      "description": "A mouse click",
+      "rating": null,
+      "rating_count": null
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "provider": "freesound",
+  "query": "cinematic whoosh",
+  "license_policy": "cc0",
+  "ordering": "relevance; popularity is supporting evidence only",
+  "results": [
+    {
+      "id": "fs:812678",
+      "title": "Sound Design Elements Whoosh SFX 041",
+      "author": "AudioPapkin",
+      "duration_seconds": 1.70993,
+      "preview_url": "https://cdn.freesound.org/previews/812/812678_8698658-hq.mp3",
+      "downloads": 227,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812678/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Whoosh SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": null,
+      "rating_count": null
+    },
+    {
+      "id": "fs:812675",
+      "title": "Sound Design Elements Whoosh SFX 040",
+      "author": "AudioPapkin",
+      "duration_seconds": 1.69349,
+      "preview_url": "https://cdn.freesound.org/previews/812/812675_8698658-hq.mp3",
+      "downloads": 344,
+      "page_url": "https://freesound.org/people/AudioPapkin/sounds/812675/",
+      "license_label": "Creative Commons 0",
+      "description": "Support me buy me coffee : https://ko-fi.com/audiopapkin Support me buy me coffee : https://buymeacoffee.com/audiopapkin Sound Design Elements Whoosh SFX ,is perfect for cinematic uses,video games. Effects recorded from the field. Recording gear-Tascam Portacapture x8 and Microphone - RØDE NTG5 Native Instruments Kontakt 7 REAPER DAW - audio processing My YouTube channel: https://www.youtube.com/channel/UC3LZ6GTrLwgmpXbLLQnS0lw",
+      "rating": 4.9,
+      "rating_count": 10
+    },
+    {
+      "id": "fs:475896",
+      "title": "ESE - WHOOSH - QUICK - Movement C.wav",
+      "author": "EpicSoundEffects",
+      "duration_seconds": 0.386,
+      "preview_url": "https://cdn.freesound.org/previews/475/475896_10132460-hq.mp3",
+      "downloads": 461,
+      "page_url": "https://freesound.org/people/EpicSoundEffects/sounds/475896/",
+      "license_label": "Creative Commons 0",
+      "description": "Our sounds will change the way you create. But don’t just take our word for it… Hear for yourself. Create your free account, and get FREE new sound samples every month here : http://bit.ly/2FL0juc",
+      "rating": 4.3,
+      "rating_count": 9
+    },
+    {
+      "id": "fs:802119",
+      "title": "whoosh_fx",
+      "author": "ScythicBlade",
+      "duration_seconds": 1.0,
+      "preview_url": "https://cdn.freesound.org/previews/802/802119_17255508-hq.mp3",
+      "downloads": 92,
+      "page_url": "https://freesound.org/people/ScythicBlade/sounds/802119/",
+      "license_label": "Creative Commons 0",
+      "description": "A 1-second white-noise whoosh with a 0.1 s fade-in and 0.2 s fade-out envelope, ideal for marking section changes or transitions in a mix",
+      "rating": 3.4,
+      "rating_count": 9
+    }
+  ]
+}

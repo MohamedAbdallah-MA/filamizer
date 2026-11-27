@@ -1,10 +1,9 @@
 # Release checklist
 
-This is an unpublished independent Filamizer package.
+Use this checklist before tagging a Filamizer release.
 
-1. Confirm the Composer vendor/name, repository and support contact. The package
-   uses MIT; keep `LICENSE` included in the release archive.
-   The current generic vendor is a working identity, not a reserved Packagist name.
+1. Check the `filamizer/filamizer` listing and support links. Include `LICENSE`
+   in the release archive.
 2. Run `composer validate --strict`, `composer install`, and `composer test`.
    Run the PHP 8.2/8.3/8.4 CI matrix and verify the advertised Laravel/Filament range.
 3. Verify a fresh generic Laravel/Filament host in a real browser: every skin,
@@ -25,7 +24,7 @@ This is an unpublished independent Filamizer package.
 8. Tag a release only after the checks pass; distribute through the chosen
    Composer repository and submit the listing separately to Filament.
 
-See UPLOADING.md for commands. This checklist does not claim release approval.
+Follow [publishing a version](UPLOADING.md) for the tag and installation commands.
 
 References:
 - https://filamentphp.com/docs/5.x/plugins/getting-started

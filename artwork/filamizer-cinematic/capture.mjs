@@ -1,0 +1,56 @@
+import {chromium} from 'playwright';
+import fs from 'node:fs/promises';
+const out = new URL('./public/textures/', import.meta.url);
+await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const context=await browser.newContext({viewport:{width:1920,height:1080},deviceScaleFactor:2});
+const page=await context.newPage();
+const layout=process.argv.includes('--finish')?JSON.parse(await fs.readFile(new URL('./src/layout.json',import.meta.url),'utf8')):{};
+const settle=async()=>{await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(900);};
+const region=(name)=>page.getByRole('region').filter({has:page.getByRole('heading',{name,exact:true})}).first();
+const cut=async(name,loc)=>{
+  await loc.scrollIntoViewIfNeeded();await settle();
+  const box=await loc.boundingBox(); const sy=await page.evaluate(()=>window.scrollY);
+  await loc.screenshot({path:new URL(name+'.png',out).pathname.replace(/^\/(.:\/)/,'$1'),animations:'disabled'});
+  return {...box,y:box.y+sy,file:name+'.png'};
+};
+const shot=async(name,cuts={})=>{
+  await page.evaluate(()=>window.scrollTo(0,0));await settle();
+  const pageH=await page.evaluate(()=>document.documentElement.scrollHeight);
+  await page.screenshot({path:new URL(name+'-full.png',out).pathname.replace(/^\/(.:\/)/,'$1'),fullPage:true,animations:'disabled'});
+  const data={pageH,file:name+'-full.png',boxes:{}};
+  for(const [key,loc] of Object.entries(cuts))data.boxes[key]=await cut(name+'-'+key,loc);
+  layout[name]=data;
+  await fs.writeFile(new URL('./src/layout.json',import.meta.url),JSON.stringify(layout,null,2));
+  console.log(name, pageH, Object.keys(data.boxes));
+};
+await page.goto('http://127.0.0.1:8127/demo-login');await settle();
+await page.addStyleTag({content:'*{animation-play-state:paused!important;caret-color:transparent!important}'});
+const mini=()=>page.locator('.fi-studio-mini-canvas');
+const basics=()=>({mini:mini(),modes:region('Make it yours'),skins:page.getByRole('radiogroup',{name:'Skin*',exact:true}),style:region('Style and color')});
+if(!process.argv.includes('--finish')){
+await shot('classic',basics());
+await page.getByText('Liquid Glass',{exact:true}).click();await settle();
+await shot('glass',{...basics(),background:region('Page background'),save:page.getByRole('button',{name:'Save changes',exact:true}).first()});
+await page.getByRole('button',{name:'Full customization',exact:true}).click();await settle();
+await shot('advanced',{...basics(),background:region('Page background'),reading:region('Reading and layout')});
+await page.getByRole('combobox',{name:'Density*',exact:true}).selectOption({label:'Compact'});
+await page.getByRole('combobox',{name:'Corner Radius*',exact:true}).selectOption({label:'Rounded'});await settle();
+await shot('tuned',{reading:region('Reading and layout'),mini:mini()});
+await page.getByRole('button',{name:'Dark theme',exact:true}).click();await settle();
+await page.getByRole('radiogroup',{name:'Skin*',exact:true}).getByText('Neon',{exact:true}).click();await settle();
+await shot('dark',{...basics(),background:region('Page background')});
+await page.getByRole('tab',{name:'Sidebar',exact:true}).click();await settle();
+await shot('sidebar',{builder:region('Sidebar Builder')});
+await page.getByRole('button',{name:'Add group',exact:true}).click();await settle();
+await shot('sidebar-group',{builder:region('Sidebar Builder')});
+}
+await page.getByRole('tab',{name:'Dashboard Appearance & Design System',exact:true}).click();await settle();
+await page.getByRole('button',{name:'Save changes',exact:true}).first().click();await page.waitForTimeout(1800);
+await shot('saved',{profiles:region('Profiles'),mini:mini()});
+await page.getByRole('button',{name:'User menu',exact:true}).click();await settle();
+console.log((await page.locator('body').innerText()).slice(-1800));
+await page.goto('http://127.0.0.1:8127/studio/my-appearance');await settle();
+await shot('personal',{mini:mini(),profiles:region('Profiles')});
+await fs.copyFile(new URL('./demo/host/public/fonts/filament/filament/inter/inter-latin-wght-normal-DIHYUR35.woff2',import.meta.url), new URL('./public/inter.woff2',import.meta.url));
+await browser.close();

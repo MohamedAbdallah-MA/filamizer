@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filamizer · مقارنة التصورات</title>
+<style>
+:root{--bg:#eef0f7;--surface:#fff;--text:#1d2336;--muted:#565f78;--line:#dce1ee;--accent:#4c42bc;--soft:#eae7ff;--shadow:0 14px 42px -24px #1e295360;--ease:cubic-bezier(.2,.8,.2,1);font:15px/1.55 "Segoe UI",Tahoma,system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--text)}
+button,a{font:inherit;color:inherit}button{background:none;border:0;cursor:pointer}a{text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.page{max-width:1600px;margin-inline:auto;padding:17px 24px 23px}
+.top{display:flex;align-items:center;gap:10px;padding-block-end:13px;border-block-end:1px solid var(--line)}
+.brand{display:inline-flex;align-items:center;gap:8px;font-weight:750;font-size:16px}
+.mark{background:var(--accent);color:#fff;padding:4px 9px;border-radius:7px;font-size:13px}
+.top small{color:var(--muted);border-inline-start:1px solid var(--line);padding-inline-start:10px}
+h1{font-size:clamp(24px,3vw,33px);line-height:1.2;margin:14px 0 6px}
+.summary{font-size:14px;color:var(--muted);margin:0 0 11px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap;margin-block-end:10px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:3px;background:#e5e8f1;border-radius:10px}
+.tabs button,.mode,.meta-button{min-height:38px;padding:6px 11px;border-radius:8px;font-size:13px;font-weight:650}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--accent);box-shadow:0 1px 3px #1e295326}
+.tabs button:hover,.mode:hover,.meta-button:hover{background:var(--soft)}
+.mode,.meta-button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.mode[aria-pressed=true],.fav[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.i{height:16px;width:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round;flex:none}
+.grid{display:grid;gap:12px;min-width:0}.grid.side{grid-template-columns:repeat(3,minmax(425px,1fr));overflow:auto;scroll-snap-type:x proximity;padding-block-end:7px}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);scroll-snap-align:start}
+.card[hidden]{display:none}
+.meta{display:flex;justify-content:space-between;gap:10px;align-items:center;min-height:70px;padding:10px 14px;border-block-end:1px solid var(--line)}
+.meta b{font-size:15px}.meta p{margin:2px 0;color:var(--muted);font-size:12px}
+.actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:end}.meta-button{min-height:34px;padding:5px 8px}
+iframe{width:100%;height:max(530px,calc(100dvh - 267px));border:0;display:block;background:var(--bg)}
+.side iframe{height:620px}
+@media(max-width:620px){.page{padding:12px 9px}.meta{align-items:start;flex-wrap:wrap}.grid.side{grid-template-columns:repeat(3,minmax(330px,92vw))}.side iframe{height:590px}.tabs button{padding-inline:8px}.meta-button,.mode,.tabs button{min-height:44px}}
+@media(prefers-reduced-motion:no-preference){.card:not([hidden]){animation:appear 180ms var(--ease)}@keyframes appear{from{opacity:0;transform:translateY(4px)}}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top"><span class="brand"><span class="mark" aria-hidden="true">F</span><b dir="ltr">Filamizer</b></span><small>تصورات الإعدادات</small></header>
+  <h1>الثيم والقائمة الجانبية</h1>
+  <p class="summary">جرّب كل تصور من جوّه الإطار، أو شوف التلاتة جنب بعض.</p>
+  <div class="toolbar">
+    <nav id="tabs" class="tabs" role="tablist" aria-label="التصورات"></nav>
+    <button type="button" class="mode" id="mode" title="S"></button>
+  </div>
+  <main class="grid" id="grid"></main>
+</div>
+<script>
+// The comparison starter's variant tabs, side-by-side iframe view and favorite.
+const variants = [
+  {file:'filamizer-tabs.html',name:'تبويبات واضحة',idea:'الثيم والقائمة في تبويبات داخل إعدادات المظهر.',tradeoff:'أقرب لطريقة Filament الحالية.'},
+  {file:'filamizer-hub.html',name:'مركز إعدادات',idea:'مدخل واحد، ومنه تفتح محرّر الثيم أو القائمة في صفحة كاملة.',tradeoff:'مساحة أكبر لكل محرّر، مع خطوة تنقّل زيادة.'},
+  {file:'filamizer-canvas.html',name:'مساحة معاينة',idea:'تنقّل بين المحرّرات والمعاينة ثابتة قدامك.',tradeoff:'مفيد للتعديل المتكرر، وبيحتاج مساحة شاشة أكبر.'}
+];
+const $ = selector => document.querySelector(selector);
+const icon = path => '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+path+'</svg>';
+const star = icon('<path d="m12 3 2.6 5.6 6.1.8-4.5 4.3 1.1 6.1-5.3-3-5.3 3 1.1-6.1-4.5-4.3 6.1-.8L12 3Z"/>');
+const split = icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 5v14"/>');
+const open = icon('<path d="M14 4h6v6m0-6-9 9m8 1v5H5V5h5"/>');
+function read(key,fallback) {
+  try { return JSON.parse(localStorage.getItem('filamizer-compare:'+key)) ?? fallback; } catch { return fallback; }
+}
+function write(key,value) {
+  try { localStorage.setItem('filamizer-compare:'+key,JSON.stringify(value)); } catch {}
+}
+const savedIndex=read('current',0);
+const state={index:variants[savedIndex]?savedIndex:0,side:read('side',false),favorite:read('favorite',null)};
+$('#tabs').innerHTML=variants.map((v,index)=>'<button type="button" id="tab-'+index+'" role="tab" data-index="'+index+'" aria-controls="card-'+index+'">'+v.name+'</button>').join('');
+$('#grid').innerHTML=variants.map((v,index)=>'<section class="card" id="card-'+index+'" aria-labelledby="tab-'+index+'"><header class="meta"><div><b>'+v.name+
+  '</b><p>'+v.idea+' '+v.tradeoff+'</p></div><div class="actions"><button type="button" class="meta-button fav" data-favorite="'+index+'" title="F"></button>'+
+  '<a class="meta-button" href="'+v.file+'" target="_blank" rel="noopener">'+open+'افتح لوحده</a></div></header>'+
+  '<iframe title="'+v.name+'" src="'+v.file+'" loading="lazy"></iframe></section>').join('');
+function render() {
+  $('#grid').classList.toggle('side',state.side);
+  $('#mode').innerHTML=split+(state.side?'عرض تصور واحد':'مقارنة جنب بعض');
+  $('#mode').setAttribute('aria-pressed',state.side);
+  variants.forEach((v,index)=>{
+    const tab=$('#tab-'+index), card=$('#card-'+index), favorite=card.querySelector('.fav');
+    tab.setAttribute('aria-selected',index===state.index);
+    tab.tabIndex=index===state.index?0:-1;
+    card.hidden=!state.side&&index!==state.index;
+    card.setAttribute('role',state.side?'region':'tabpanel');
+    favorite.setAttribute('aria-pressed',index===state.favorite);
+    favorite.innerHTML=star+(index===state.favorite?'المفضّل':'اختاره');
+  });
+  write('current',state.index); write('side',state.side); write('favorite',state.favorite);
+}
+function activate(index) { state.index=index; state.side=false; render(); }
+document.addEventListener('click',event=>{
+  const button=event.target.closest('button');
+  if(!button) return;
+  if(button.dataset.index!==undefined) return activate(Number(button.dataset.index));
+  if(button.dataset.favorite!==undefined) {
+    const index=Number(button.dataset.favorite);
+    state.favorite=state.favorite===index?null:index;
+  } else if(button.id==='mode') state.side=!state.side;
+  render();
+});
+document.addEventListener('keydown',event=>{
+  if(event.ctrlKey||event.metaKey||event.altKey) return;
+  const key=event.key.toLowerCase();
+  if(/^[1-3]$/.test(key)) return activate(Number(key)-1);
+  if(['arrowright','arrowleft','home','end'].includes(key)&&event.target.getAttribute('role')==='tab') {
+    event.preventDefault();
+    activate(key==='home'?0:key==='end'?2:(state.index+(key==='arrowleft'?1:2))%variants.length);
+    $('#tab-'+state.index).focus();
+  }
+  if(key==='s') { state.side=!state.side; render(); }
+  if(key==='f'&&!state.side) $('[data-favorite="'+state.index+'"]').click();
+});
+render();
+</script>
+</body>
+</html>

@@ -1,101 +1,33 @@
-# Uploading Filamizer
+# Publish a Filamizer release
 
-This folder is the package repository root. It contains source, tests and CI;
-the consuming Laravel application is separate. The Composer identity is now
-`filamizer/filamizer`; its registration is separate from any earlier listing.
+The source lives in [MohamedAbdallah-MA/filamizer](https://github.com/MohamedAbdallah-MA/filamizer). Packagist tracks the repository under [filamizer/filamizer](https://packagist.org/packages/filamizer/filamizer).
 
-## 1. Prepare the identity and release
+## 1. Check the release candidate
 
-The working Composer name is `filamizer/filamizer`, with
-`Filamizer\FilamizerPlugin` as the plugin class. Composer requires a
-vendor/package name. Check that you own the chosen vendor before publishing;
-change `composer.json`, the asset package ID in the service provider, the asset
-publication test and documentation together if you choose another vendor.
+Complete the [release checklist](RELEASING.md) and review the release diff. Check that the archive contains the MIT license, runtime assets, and installation docs. Keep local databases, generated demos, and dependencies out of the release.
 
-Filamizer is distributed under the MIT license. Keep the root `LICENSE` file and
-its copyright notice in the distributed package.
-Complete [the release checklist](RELEASING.md), then run:
+## 2. Tag and push
 
-```sh
-composer install
-composer validate --strict
-composer test
-composer audit
-```
-
-Do not upload `vendor`, caches, credentials, local databases or host application
-files. The included ignore rules cover development dependencies and caches.
-
-## 2. Upload source to GitHub
-
-This folder already contains a Git repository with the package's extracted
-development history and a standalone-conversion commit on `main`. Do not
-reinitialize it or replace that history with a new initial commit.
-
-The GitHub repository has been renamed to `MohamedAbdallah-MA/filamizer`.
-The local origin points to that repository. Run these commands from this folder
-using your authenticated Git client:
-
-```sh
-git status
-git log --oneline
-git remote set-url origin git@github.com:MohamedAbdallah-MA/filamizer.git
-git push -u origin main
-```
-
-Review the history before making the repository public: earlier revisions retain
-their original package identity and documentation. The current revision uses
-Filamizer branding. Keep `composer.json` at repository root. Do not
-upload the surrounding web projects directory. The GitHub Actions
-workflow will run when pushed. Review its results before tagging a release.
-
-After release checks pass, choose the correct version, for example a preview:
+From a reviewed commit with passing CI, create and push the version tag. The following example uses a beta tag.
 
 ```sh
 git tag v0.1.0-beta.1
 git push origin v0.1.0-beta.1
 ```
 
-Composer derives release versions from Git tags; do not add a hard-coded version
-to the package's `composer.json`. A beta tag requires consumers to opt into beta
-stability, for example `composer require filamizer/filamizer:^0.1@beta`.
+Composer derives the package version from the Git tag. Keep the version out of `composer.json`.
 
-## 3. Make the package installable
+## 3. Verify the release in a clean host
 
-For a public package, finalize its license, make the repository public, and submit
-the repository URL at [Packagist](https://packagist.org/packages/submit). Configure
-repository updates using Packagist's instructions. Verify a clean installation
-from that repository before advertising an install command.
+Check that the tag appears on Packagist, then install it in a fresh Laravel application with Filament 5.
 
-For private or paid distribution, configure an authenticated Composer repository
-or private distribution service and provide customers with its installation and
-credential instructions. The public Packagist service aggregates public packages;
-listing a paid plugin on Filament does not itself distribute its private code.
-Keep credentials out of source control and examples.
+```sh
+composer require "filamizer/filamizer:0.1.0-beta.1"
+php artisan filamizer:install --migrate
+```
 
-## 4. Submit the Filament listing
+Follow the [panel registration example](../README.md#2-register-the-plugin-and-grant-access) and verify that both editors open and save.
 
-Open [Filament Plugins](https://filamentphp.com/plugins) and follow **Submit
-plugins**. Prepare the package/repository URL, installation docs, Filament 5
-compatibility details, screenshots, a generic demo, license or purchase details,
-and a support contact. Follow the current author form for its required fields.
-Repository upload, Composer distribution and directory submission are separate
-steps; a submission does not guarantee approval.
+## 4. Submit or update the Filament listing
 
-Official references:
-
-- [Filament plugin development](https://filamentphp.com/docs/5.x/plugins/getting-started)
-- [Packagist submission and package naming](https://packagist.org/about)
-- [Composer libraries and version tags](https://getcomposer.org/doc/02-libraries.md)
-
-## Replacing the earlier Composer listing
-
-Push the commit that sets `name` to `filamizer/filamizer`, then submit the same
-GitHub repository URL to Packagist for the new package identity. Existing published
-Git tags retain their original metadata; create a new version tag from the renamed
-commit when preparing the next release rather than moving an existing tag.
-
-Once the new package is published and installation is verified, mark the earlier
-package listing abandoned with `filamizer/filamizer` as the replacement. Update the
-Filament listing Composer field. Its GitHub and documentation URLs stay unchanged.
-The `filamizer` vendor must be available or owned by the submitting maintainer.
+Use **Submit plugins** in the [Filament plugin directory](https://filamentphp.com/plugins). Include the Composer package name, compatibility, installation instructions, screenshots, and a support contact. If you maintain an older listing, update its installation instructions to use the current package name.
